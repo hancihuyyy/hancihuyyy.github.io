@@ -93,7 +93,7 @@
         </div>
       </div>
 
-      <!-- 404 (fallback sekilas; setelah itu redirect ke /404) -->
+      <!-- 404 (fallback sekilas; lalu redirect ke /404) -->
       <div id="errBox" class="hidden mt-8 space-y-4">
         <div class="p-4 rounded-xl border border-red-400/40 bg-red-400/10">
           <div class="text-red-300 font-semibold">404 · Link Tidak Ditemukan</div>
@@ -137,6 +137,17 @@
       return null;
     }
 
+    function showOk(target){
+      document.getElementById('loading').classList.add('hidden');
+      okBox.classList.remove('hidden');
+      goBtn.href = target;
+    }
+    function showErr(message){
+      document.getElementById('loading').classList.add('hidden');
+      errBox.classList.remove('hidden');
+      errMsg.textContent = message || 'Tidak diketahui';
+    }
+
     async function redirectByKey(key){
       if(!key) return hard404('Key shortlink tidak ditemukan pada URL.');
 
@@ -153,7 +164,7 @@
           if(typeof gtag==='function'){ gtag('event','short_link_redirect',{ short_link_key:key, target_url:target }); }
           titleEl.textContent = 'Berhasil Ditemukan';
           descEl.textContent  = 'Sebentar, membuka halaman tujuan…';
-          goBtn.href = target;
+          showOk(target);
           setTimeout(()=>{ location.href = target; }, 800);
         }else{
           if(typeof gtag==='function'){ gtag('event','short_link_not_found',{ short_link_key:key }); }
@@ -172,6 +183,7 @@
         path: location.pathname,
         reason
       });
+      // Arahkan ke 404 di root domain baru
       location.replace(`/404/?${q.toString()}`);
     }
 

@@ -9,12 +9,12 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-K5JQPNMVEF');</script>
 
-  <!-- Tailwind & Font -->
+  <!-- Tailwind & font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <!-- highlight.js (tema gelap) -->
-  <link id="hlTheme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+  <!-- highlight theme (gelap default) -->
+  <link id="hlTheme" rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
 
   <style>
     :root{--c1:#0ea5e9;--c2:#22c55e;--acc:#22c55e}
@@ -36,7 +36,7 @@
     @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     pre{background:#0f172a;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:1.1rem;white-space:pre-wrap;word-wrap:break-word}
 
-    /* Loader overlay */
+    /* LOADER overlay */
     .loader-wrap{
       position:fixed; inset:0; display:grid; place-items:center; z-index:40;
       background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(11,18,32,.88));
@@ -56,8 +56,10 @@
     .loader-line{font-weight:800;font-size:1.15rem}
     .skeleton{
       height: 220px; border-radius:12px; border:1px solid rgba(255,255,255,.1);
-      background:linear-gradient(100deg, rgba(255,255,255,.06) 30%, rgba(255,255,255,.12) 45%, rgba(255,255,255,.06) 60%);
-      background-size:200% 100%; animation: shimmer 1.3s ease-in-out infinite;
+      background:
+        linear-gradient(100deg, rgba(255,255,255,.06) 30%, rgba(255,255,255,.12) 45%, rgba(255,255,255,.06) 60%) ;
+      background-size: 200% 100%;
+      animation: shimmer 1.3s ease-in-out infinite;
     }
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
@@ -66,31 +68,51 @@
     .dot{width:10px;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--c1),var(--acc));opacity:.9;animation:bounce 1s infinite}
     .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}.dot:nth-child(4){animation-delay:.36s}
     @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.6}40%{transform:translateY(-6px);opacity:1}}
+
     .bar{height:8px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
     .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--acc));animation:grow 1.6s ease-in-out infinite}
     @keyframes grow{0%{width:0}50%{width:90%}100%{width:0}}
+
     .wave{position:relative;height:40px;overflow:hidden;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
     .wave::before,.wave::after{
       content:""; position:absolute; inset:-60% -20% auto -20%; height:160%; border-radius:50%;
       background:radial-gradient(circle at 50% 50%, var(--acc), transparent 60%);
-      animation:float 3s ease-in-out infinite; opacity:.35; filter:blur(14px)
+      animation:float 3s ease-in-out infinite;
+      opacity:.35; filter:blur(14px)
     }
     .wave::after{animation-delay:1.2s; opacity:.25}
     @keyframes float{0%,100%{transform:translateX(-10%) translateY(6px)}50%{transform:translateX(60%) translateY(-6px)}}
 
-    /* Info Bar */
-    #infoBar {position: fixed; inset-inline: 0; bottom: 0; z-index: 30; display: flex; justify-content: center; pointer-events: none;}
+    /* === Info Bar === */
+    #infoBar {
+      position: fixed; inset-inline: 0; bottom: 0; z-index: 30;
+      display: flex; justify-content: center; pointer-events: none;
+    }
     .info-inner{
-      pointer-events:auto; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
-      max-width: 72rem; width: calc(100% - 1rem); margin: .5rem auto; padding: .5rem .75rem;
+      pointer-events:auto;
+      display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
+      max-width: 72rem; width: calc(100% - 1rem);
+      margin: .5rem auto; padding: .5rem .75rem;
       border-radius: 12px; border:1px solid rgba(255,255,255,.12);
-      background: rgba(15,23,42,.6); backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      background: rgba(15,23,42,.6); backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
       font-size: .84rem; color:#e5e7eb;
     }
-    .info-chip{display:inline-flex; align-items:center; gap:.4rem; padding:.28rem .55rem; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); white-space: nowrap;}
+    .info-chip{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.28rem .55rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      white-space: nowrap;
+    }
+    .info-sep{opacity:.25}
+    @media (max-width: 640px){
+      .info-inner{font-size:.8rem}
+    }
 
-    /* Tools (copy/unduh) */
-    .pill{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;padding:.5rem .9rem;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);transition:transform .15s, box-shadow .2s, background .2s;}
+    /* Pill buttons (salin & unduh) */
+    .pill{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;padding:.5rem .9rem;
+      border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);transition:transform .15s, box-shadow .2s, background .2s;}
     .pill svg{width:16px;height:16px;opacity:.9}
     .pill:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
     .pill--grad{background-image:linear-gradient(to right,var(--c1),var(--c2));color:#fff;border-color:transparent}
@@ -99,7 +121,7 @@
   </style>
 </head>
 <body>
-  <!-- Loader -->
+  <!-- LOADER overlay -->
   <div id="loader" class="loader-wrap">
     <div class="loader-card">
       <div class="loader-title">
@@ -128,6 +150,7 @@
 
       <div class="mt-6 flex items-center gap-2">
         <span class="chip" id="langChip">Jenis: -</span>
+        <span id="badgeKey" class="chip hidden">Key</span>
       </div>
 
       <div class="mt-6 relative">
@@ -157,6 +180,7 @@
 
       <div class="mt-8 flex gap-3">
         <a href="../create/source-code/" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold">Buat Kode Lain</a>
+        <a id="rawBtn" target="_blank" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold hidden">Buka Raw</a>
       </div>
     </section>
   </main>
@@ -168,6 +192,7 @@
       <span class="info-chip" id="ibLang">Bahasa: -</span>
       <span class="info-chip" id="ibSize">Ukuran: -</span>
       <span class="info-chip" id="ibLines">Baris: -</span>
+      <span class="info-chip" id="ibSource">Sumber: -</span>
       <span class="info-chip" id="ibLoaded">Dimuat: -</span>
     </div>
   </div>
@@ -188,42 +213,66 @@
 
   <script>
     const $=(s)=>document.querySelector(s);
-
-    const loader      = $('#loader');
-    const loaderLine  = $('#loaderLine');
-    const variantDots = $('#variantDots');
-    const variantBar  = $('#variantBar');
-    const variantWave = $('#variantWave');
-
     const titleTag = $('#titleTag');
     const titleEl  = $('#title');
     const subtitle = $('#subtitle');
     const codeEl   = $('#code');
     const langChip = $('#langChip');
+    const badgeKey = $('#badgeKey');
     const okBar    = $('#okBar');
     const errBox   = $('#errBox');
-    const toolBtns = $('#toolBtns');
+    const rawBtn   = $('#rawBtn');
+
+    const loader      = $('#loader');
+    const loaderLine  = $('#loaderLine');
+    const toolBtns    = $('#toolBtns');
     const copyBtn     = $('#copyBtn');
     const downloadBtn = $('#downloadBtn');
 
-    const ibName = $('#ibName');
-    const ibLang = $('#ibLang');
-    const ibSize = $('#ibSize');
-    const ibLines= $('#ibLines');
-    const ibLoaded = $('#ibLoaded');
+    const variantDots = $('#variantDots');
+    const variantBar  = $('#variantBar');
+    const variantWave = $('#variantWave');
 
-    // Kalimat loading (1x per refresh)
-    const phrases = [
-      'sedang membuat…','lagi mikirin kode…','otw ngambil file…','mengurai Base64…','memanggil highlight.js…',
-      'sedang merapikan baris…','lagi cari kurung yang hilang…','pemanggilan variabel…','kompilasi imajinasi…',
-      'saling sapa dengan semicolon…','mencari bug yang pemalu…','mendorong bit ke layar…','sinkronisasi naskah…',
-      'memasang tema gelap…','mengikat dependensi…','membelai bracket…','menghela napas… lalu lanjut…',
-      'menyusun huruf jadi logika…','berburu koma yang nyasar…','merapikan spasi tab…','menyelaraskan baris…','menyisir komentar lama…',
-      'mengecek tanda titik koma…','mendeteksi variabel liar…','meluruskan kurung siku…','mengusir whitespace hantu…'
+    // Info bar
+    const ibName = document.getElementById('ibName');
+    const ibLang = document.getElementById('ibLang');
+    const ibSize = document.getElementById('ibSize');
+    const ibLines= document.getElementById('ibLines');
+    const ibSrc  = document.getElementById('ibSource');
+    const ibLoaded = document.getElementById('ibLoaded');
+
+    // Kalimat loading (1 kali per refresh, acak)
+    const phrasesBase = [
+      'sedang membuat…',
+      'lagi mikirin kode…',
+      'otw ngambil file…',
+      'mengurai Base64…',
+      'memanggil highlight.js…',
+      'sedang merapikan baris…',
+      'lagi cari kurung yang hilang…',
+      'pemanggilan variabel…',
+      'kompilasi imajinasi…',
+      'saling sapa dengan semicolon…',
+      'mencari bug yang pemalu…',
+      'mendorong bit ke layar…',
+      'sinkronisasi naskah…',
+      'memasang tema gelap…',
+      'mengikat dependensi…',
+      'membelai bracket…',
+      'menghela napas… lalu lanjut…',
+      'menyusun huruf jadi logika…',
+      'berburu koma yang nyasar…',
+      'merapikan spasi tab…',
+      'menyelaraskan baris…',
+      'menyisir komentar lama…',
+      // tambahan
+      'mengecek tanda titik koma…',
+      'mendeteksi variabel liar…',
+      'meluruskan kurung siku…'
     ];
-    loaderLine.textContent = phrases[Math.floor(Math.random()*phrases.length)];
+    loaderLine.textContent = phrasesBase[Math.floor(Math.random()*phrasesBase.length)];
 
-    // Pilih varian loader + accent
+    // Random pilih varian loader & accent
     (function pickVariant(){
       const variants = [variantDots, variantBar, variantWave];
       const pick = variants[Math.floor(Math.random()*variants.length)];
@@ -253,7 +302,7 @@
       downloadBtn.setAttribute('download', fname);
     }
     function formatBytes(n){ if(!Number.isFinite(n)) return '-'; const u=['B','KB','MB','GB']; let i=0; while(n>=1024 && i<u.length-1){n/=1024;i++;} return (i===0?n:n.toFixed(1))+' '+u[i]; }
-    function updateInfoBar({name, lang, codeText}){
+    function updateInfoBar({name, lang, codeText, sourceLabel}){
       const te = new TextEncoder();
       const bytes = te.encode(codeText||'').length;
       const lines = (codeText||'').split(/\r?\n/).length;
@@ -261,11 +310,42 @@
       ibLang.textContent  = `Bahasa: ${(lang||'plaintext').toUpperCase()}`;
       ibSize.textContent  = `Ukuran: ${formatBytes(bytes)}`;
       ibLines.textContent = `Baris: ${lines}`;
+      ibSrc.textContent   = `Sumber: ${sourceLabel||'-'}`;
       const dt = new Date(); const pad=(x)=>String(x).padStart(2,'0');
       ibLoaded.textContent= `Dimuat: ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
     }
 
-    // Loader dari data (wajib)
+    // Loader dari key (DIPERBAIKI: pakai file.json di domain sekarang)
+    async function loadFromKey(key){
+      badgeKey.classList.remove('hidden');
+      const fileJson = `${location.origin}/file.json`;
+      const r = await fetch(fileJson, {cache:'no-store'});
+      if(!r.ok) throw new Error(`Gagal memuat ${fileJson} (${r.status})`);
+      const map = await r.json();
+      const norm = key.replace(/ /g,'+');
+      const url = map[norm];
+      if(!url) throw new Error(`Key '${key}' tidak ditemukan di file.json`);
+      const rc = await fetch(url, {cache:'no-store'});
+      if(!rc.ok) throw new Error(`Gagal memuat ${url} (${rc.status})`);
+      const code = await rc.text();
+      const ext = (url.split('.').pop()||'txt').toLowerCase();
+
+      setLang(ext);
+      const p = new URLSearchParams(location.search);
+      const providedName = p.get('name');
+      const titleName = providedName ? providedName : norm.replace(/\+/g,' ');
+      titleEl.textContent = titleName;
+      titleTag.textContent = `Kode: ${titleEl.textContent}`;
+      codeEl.textContent = code; hljs.highlightElement(codeEl);
+      rawBtn.href = url; rawBtn.classList.remove('hidden');
+      showOk();
+
+      const baseName = providedName || titleName || url.split('/').pop().split('.').slice(0,-1).join('.');
+      setDownload(baseName, ext, code);
+      updateInfoBar({ name: (baseName + '.' + ext), lang: ext, codeText: code, sourceLabel: 'key' });
+    }
+
+    // Loader dari data
     function loadFromData(d){
       const parsed = decodeData(d);
       if(!parsed) throw new Error('Data tidak valid');
@@ -279,20 +359,22 @@
 
       const ext = extFromLang(type||'plaintext');
       setDownload(title || 'script', ext, code || '');
-      updateInfoBar({ name: ((title || 'script') + '.' + ext), lang: type || 'plaintext', codeText: code || '' });
+      updateInfoBar({ name: ((title || 'script') + '.' + ext), lang: type || 'plaintext', codeText: code || '', sourceLabel: 'data' });
     }
 
-    // Boot + minimum 6.5s loader
+    // BOOT + MINIMUM 6.5s LOADER
     (async ()=>{
       const p = new URLSearchParams(location.search);
       const data = p.get('data');
+      const key  = p.get('key');
 
       const t0 = Date.now();
       let loadErr = null;
 
       try{
         if(data){ loadFromData(data); }
-        else{ showErr("Tidak ada parameter 'data'."); }
+        else if(key){ await loadFromKey(key); }
+        else{ showErr("Tidak ada parameter 'data' atau 'key'."); }
         subtitle.textContent = ' ';
       }catch(e){
         loadErr = e;

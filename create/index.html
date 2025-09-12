@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>hancihuyyy · Buat Link Tugas</title>
 
@@ -9,219 +9,292 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-K5JQPNMVEF');</script>
 
-  <!-- Tailwind -->
+  <!-- Tailwind & font -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root{--c1:#0ea5e9;--c2:#22c55e}
+    :root{ --c1:#0ea5e9; --c2:#22c55e; --ring:rgba(14,165,233,.35); }
+    html,body{height:100%}
     body{
-      font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background:
         radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.16), transparent 60%),
         radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.14), transparent 55%),
-        linear-gradient(180deg,#0b1220,#0b1220);
+        linear-gradient(180deg, #0b1220, #0b1220);
       color:#e5e7eb;
     }
-    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:fade .4s ease both}
-    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2));transition:transform .12s,box-shadow .2s}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:fade .5s ease both}
+    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2));transition:transform .15s,box-shadow .2s}
     .btn-grad:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(34,197,94,.25)}
-    .input{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.7rem .9rem}
-    .muted{color:#9aa0a6}
+    .btn-muted{background:#475569}.btn-muted:hover{background:#334155}
     .chip{font-size:.8rem;padding:.25rem .6rem;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06)}
-    .pill{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;padding:.5rem .9rem;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px)}
+    .input{background:rgba(11,18,32,.65);border:1px solid rgba(255,255,255,.12);color:#e5e7eb;border-radius:12px;padding:.8rem 1rem;transition:box-shadow .2s,border-color .2s,transform .08s}
+    .input:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 6px var(--ring);transform:translateY(-1px)}
+    .task-card{border:1px dashed rgba(255,255,255,.15);border-radius:16px;padding:1rem;background:rgba(255,255,255,.04)}
+    .k-label{font-size:.85rem;font-weight:600;opacity:.9}
+    .k-err{color:#f87171;font-size:.85rem}
+    .fade{animation:fade .5s ease both}
     @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-    code{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:.25rem .45rem;border-radius:8px}
-    a.link{color:#7dd3fc;text-decoration:underline}
+    code{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:.2rem .45rem;border-radius:8px}
   </style>
 </head>
 <body>
   <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <span class="chip">Create</span>
-      <span class="text-sm opacity-80">Generator Tautan Tugas</span>
+      <span class="chip">Creator</span>
+      <span class="text-sm opacity-80">Buat link tugas (ANY hanya YouTube)</span>
     </div>
-    <nav class="hidden sm:flex items-center gap-2">
-      <a href="../task/" class="chip">Lihat Task</a>
-      <a href="./source-code/" class="chip">Buat Kode</a>
-    </nav>
+    <a class="chip" href="../task/" title="Halaman Task">Task</a>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
-    <!-- FORM -->
     <section class="card p-6 sm:p-8 mt-4">
       <h1 class="text-2xl sm:text-3xl font-extrabold">Buat Link Tugas</h1>
-      <p class="muted mt-2">Link akan mengarah ke domain ini (<code id="originShow"></code>), bukan repo lama.</p>
+      <p class="mt-2 opacity-80">Tambah beberapa URL target dan beberapa tugas. Link hasil akan mengarah ke <code id="originShow"></code>/task</p>
 
-      <div class="mt-6 grid sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm mb-1">Platform</label>
-          <select id="platform" class="input w-full">
-            <option value="youtube">YouTube</option>
-            <option value="roblox">Roblox</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="tiktok">TikTok</option>
-            <option value="lainnya">Lainnya</option>
+      <!-- Target URLs -->
+      <div class="mt-8">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">URL Target (maks. 5)</h2>
+          <button id="addTargetBtn" class="px-3 py-2 rounded-lg btn-grad text-white text-sm font-semibold">+ Tambah URL</button>
+        </div>
+        <div id="targets" class="grid gap-3"></div>
+        <p id="targetErr" class="k-err mt-2 hidden">Isi minimal 1 URL target yang valid.</p>
+      </div>
+
+      <!-- Tasks -->
+      <div class="mt-10">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">Daftar Tugas (maks. 5)</h2>
+          <button id="addTaskBtn" class="px-3 py-2 rounded-lg btn-grad text-white text-sm font-semibold">+ Tambah Tugas</button>
+        </div>
+        <div id="tasks" class="grid gap-3"></div>
+        <p id="taskErr" class="k-err mt-2 hidden">Tambah minimal 1 tugas dengan URL.</p>
+      </div>
+
+      <!-- Required + Color -->
+      <div class="mt-10 grid sm:grid-cols-3 gap-4">
+        <div class="card p-4">
+          <label class="k-label block mb-2" for="requiredCount">Jumlah tugas wajib</label>
+          <input id="requiredCount" type="number" min="1" value="1" class="input w-full" />
+          <p class="text-xs opacity-70 mt-2">Tidak boleh melebihi total tugas.</p>
+        </div>
+        <div class="card p-4">
+          <label class="k-label block mb-2" for="colorScheme">Skema warna</label>
+          <select id="colorScheme" class="input w-full">
+            <option value="modernBlue">Modern Blue</option>
+            <option value="energeticGreen">Energetic Green</option>
+            <option value="vibrantPurple">Vibrant Purple</option>
+            <option value="sunsetOrange">Sunset Orange</option>
+            <option value="coolGray">Cool Gray</option>
           </select>
         </div>
-
-        <div>
-          <label class="block text-sm mb-1">Aksi</label>
-          <select id="action" class="input w-full">
-            <!-- default akan diisi sesuai mapping platform -->
-          </select>
-          <p class="muted text-xs mt-1">Catatan: “any” hanya untuk YouTube. Platform lain pakai label spesifik.</p>
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-sm mb-1">Target URL (satu per baris)</label>
-          <textarea id="targets" rows="5" class="input w-full" placeholder="https://contoh.link/pertama
-https://contoh.link/kedua"></textarea>
-          <p class="muted text-xs mt-1">URL tidak akan ditampilkan di halaman Task. Sistem hanya membuka, menunggu 11 detik, lalu menandai selesai otomatis.</p>
+        <div class="card p-4">
+          <label class="k-label block mb-2" for="accent">Accent (hex optional)</label>
+          <input id="accent" class="input w-full" placeholder="#10b981" />
+          <p class="text-xs opacity-70 mt-2">Kosongkan jika tidak perlu.</p>
         </div>
       </div>
 
-      <div class="mt-6 flex flex-wrap gap-3">
-        <button id="genBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold">Buat Link</button>
-        <button id="copyBtn" class="pill">📋 Salin</button>
-        <a id="openBtn" class="pill" target="_blank">🔗 Buka</a>
+      <!-- Actions -->
+      <div class="mt-10 grid sm:grid-cols-2 gap-3">
+        <button id="genBtn" class="px-5 py-4 rounded-xl btn-grad text-white font-bold text-lg">Buat Link Tugas</button>
+        <button id="resetBtn" class="px-5 py-4 rounded-xl btn-muted text-white font-semibold">Reset Form</button>
       </div>
 
-      <div class="mt-4">
-        <label class="block text-sm mb-1">Hasil Link</label>
-        <input id="result" class="input w-full" readonly />
+      <!-- Result -->
+      <div id="result" class="mt-8 hidden fade">
+        <label class="k-label block mb-2" for="outLink">Link Tugas Anda</label>
+        <textarea id="outLink" readonly class="input w-full h-28"></textarea>
+        <div class="mt-3 flex gap-3">
+          <button id="copyBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold">Salin</button>
+          <a id="openTask" target="_blank" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Buka</a>
+        </div>
       </div>
-    </section>
-
-    <!-- ANALISIS (jangan dihapus) -->
-    <section id="analysis" class="card p-6 sm:p-8 mt-6">
-      <h2 class="text-xl font-bold">Analisis</h2>
-      <p class="muted mt-2">
-        Bagian analisis ini sengaja dipertahankan sebagai default. Jika perlu,
-        kamu bisa menulis catatan internal di sini tanpa memengaruhi generator link.
-      </p>
-      <ul class="list-disc ml-6 mt-3 text-sm">
-        <li>Origin aktif: <code id="originShow2"></code></li>
-        <li>Mode aksi: YouTube hanya “any”, platform lain spesifik (Roblox ikuti/join, WhatsApp gabung, TikTok follow/like/comment).</li>
-        <li>Durasi hitung: 11 detik per tugas, otomatis selesai tanpa tombol “Selesai”.</li>
-      </ul>
     </section>
   </main>
 
   <script>
-    const $ = (s)=>document.querySelector(s);
-    const originShow = $('#originShow');
-    const originShow2 = $('#originShow2');
+    const originShow = document.getElementById('originShow');
     originShow.textContent = location.origin;
-    originShow2.textContent = location.origin;
 
-    const platformEl = $('#platform');
-    const actionEl   = $('#action');
-    const targetsEl  = $('#targets');
-    const genBtn     = $('#genBtn');
-    const copyBtn    = $('#copyBtn');
-    const openBtn    = $('#openBtn');
-    const resultEl   = $('#result');
+    const isValidUrl = (u)=>{ try{ new URL(u); return true; }catch{ return false; } };
+    const h = (html)=>{ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; };
 
-    // ===== Mapping aksi per platform =====
-    // catatan: hanya YouTube yang boleh "any"
-    const ACTIONS = {
-      youtube: [
-        { value:'any', label:'any (bebas: like/sub/tonton/hype)' }
-      ],
-      roblox: [
-        { value:'follow', label:'ikuti akun Roblox' },
-        { value:'join',   label:'bergabung ke grup Roblox' }
-      ],
-      whatsapp: [
-        { value:'join', label:'gabung komunitas WhatsApp' }
-      ],
-      tiktok: [
-        { value:'follow',  label:'follow akun TikTok' },
-        { value:'like',    label:'like video TikTok' },
-        { value:'comment', label:'comment video TikTok' }
-      ],
-      lainnya: [
-        { value:'visit', label:'kunjungi link' }
-      ]
+    const platformOptions = [
+      { val: 'youtube', label: 'YouTube' },
+      { val: 'tiktok',  label: 'TikTok' },
+      { val: 'roblox',  label: 'Roblox' },
+      { val: 'discord', label: 'Discord' },
+      { val: 'whatsapp',label: 'WhatsApp' },
+      { val: 'blogger', label: 'Blogger' },
+      { val: 'custom',  label: 'Custom' },
+    ];
+
+    // Any hanya YouTube. Platform lain opsi spesifik.
+    const actionOptions = {
+      youtube: [ {val:'any', label:'Any (otomatis)'} ],
+      tiktok:  [ {val:'follow','label':'Follow'}, {val:'like','label':'Like'}, {val:'comment','label':'Komentar'} ],
+      roblox:  [ {val:'ikut','label':'Ikuti akun'}, {val:'join','label':'Gabung group'} ],
+      discord: [ {val:'join','label':'Join server'} ],
+      whatsapp:[ {val:'join','label':'Gabung komunitas'}, {val:'any','label':'Masuk ke komunitas'} ],
+      blogger: [ {val:'visit','label':'Kunjungi halaman'} ],
+      custom:  [ {val:'open','label':'Buka link'} ],
     };
 
-    function fillActionOptions(){
-      const pf = platformEl.value;
-      const opts = ACTIONS[pf] || ACTIONS['lainnya'];
-      actionEl.innerHTML = '';
-      for(const o of opts){
-        const op = document.createElement('option');
-        op.value = o.value; op.textContent = o.label;
-        actionEl.appendChild(op);
+    const targetsEl = document.getElementById('targets');
+    const tasksEl   = document.getElementById('tasks');
+    const addTargetBtn = document.getElementById('addTargetBtn');
+    const addTaskBtn   = document.getElementById('addTaskBtn');
+    const targetErr = document.getElementById('targetErr');
+    const taskErr   = document.getElementById('taskErr');
+    const requiredCountEl = document.getElementById('requiredCount');
+    const colorSchemeEl   = document.getElementById('colorScheme');
+    const accentEl   = document.getElementById('accent');
+    const genBtn   = document.getElementById('genBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultEl = document.getElementById('result');
+    const outLink  = document.getElementById('outLink');
+    const openTask = document.getElementById('openTask');
+
+    function targetRow(){
+      const row = h(`
+        <div class="task-card grid gap-2 sm:grid-cols-[1fr_auto]">
+          <input type="url" placeholder="https://contoh.com/tujuan" class="input w-full" />
+          <div class="flex gap-2 justify-end">
+            <button class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold">Hapus</button>
+          </div>
+        </div>
+      `);
+      row.querySelector('button').addEventListener('click', ()=>row.remove());
+      return row;
+    }
+
+    function taskRow(){
+      const row = h(`
+        <div class="task-card grid gap-3 md:grid-cols-[160px_1fr]">
+          <div class="grid gap-2">
+            <label class="k-label">Platform</label>
+            <select class="input js-platform">
+              ${platformOptions.map(p=>`<option value="${p.val}">${p.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="grid gap-2">
+            <div class="grid sm:grid-cols-2 gap-2">
+              <div>
+                <label class="k-label">Aksi</label>
+                <select class="input js-action"></select>
+              </div>
+              <div>
+                <label class="k-label">URL Tugas</label>
+                <input type="url" class="input js-url" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold">Hapus</button>
+              <span class="text-xs opacity-75">YouTube selalu “Any”. Platform lain pilih aksi spesifik.</span>
+            </div>
+          </div>
+        </div>
+      `);
+
+      const platformSel = row.querySelector('.js-platform');
+      const actionSel   = row.querySelector('.js-action');
+
+      function fillActions(){
+        const opts = actionOptions[platformSel.value] || [{val:'open',label:'Buka link'}];
+        actionSel.innerHTML = opts.map(o=>`<option value="${o.val}">${o.label}</option>`).join('');
+        // Kunci ke 'any' kalau YouTube
+        actionSel.disabled = (platformSel.value === 'youtube');
       }
-    }
-    platformEl.addEventListener('change', fillActionOptions);
-    fillActionOptions(); // initial
+      platformSel.addEventListener('change', fillActions);
+      fillActions();
 
-    function encodeData(obj){
-      const json = JSON.stringify(obj);
-      // konsisten dengan viewer/task decoder: decodeURIComponent(atob(x))
-      return btoa(encodeURIComponent(json));
+      row.querySelector('button').addEventListener('click', ()=>row.remove());
+      return row;
     }
 
-    function buildTaskUrl(payload){
-      const base = `${location.origin}/task/`;
-      return `${base}?data=${payload}`;
+    function addTarget(){ 
+      if (targetsEl.children.length >= 5) return;
+      targetsEl.appendChild(targetRow()); 
+    }
+    function addTask(){ 
+      if (tasksEl.children.length >= 5) return;
+      tasksEl.appendChild(taskRow()); 
     }
 
-    function normalizeTargets(text){
-      return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    addTargetBtn.addEventListener('click', addTarget);
+    addTaskBtn.addEventListener('click', addTask);
+
+    resetBtn.addEventListener('click', ()=>{
+      targetsEl.innerHTML=''; tasksEl.innerHTML='';
+      addTarget(); addTask();
+      requiredCountEl.value=1; colorSchemeEl.value='modernBlue'; accentEl.value='';
+      resultEl.classList.add('hidden'); outLink.value='';
+      targetErr.classList.add('hidden'); taskErr.classList.add('hidden');
+    });
+
+    function validHex(hex){
+      if(!hex) return true;
+      return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex.trim());
     }
 
-    function labelForTask(platform, action){
-      // ini label yang muncul pada kartu Task (bukan di URL)
-      // mengikuti kebijakan: YouTube → any; selain itu spesifik.
-      switch(platform){
-        case 'youtube': return 'YouTube · any';
-        case 'roblox':  return action==='join' ? 'Roblox · join' : 'Roblox · follow';
-        case 'whatsapp':return 'WhatsApp · gabung';
-        case 'tiktok':
-          if(action==='follow') return 'TikTok · follow';
-          if(action==='like')   return 'TikTok · like';
-          return 'TikTok · comment';
-        default: return 'Tugas';
-      }
+    function encodePayload(obj){
+      return btoa(JSON.stringify(obj)); // task page pakai atob(JSON)
     }
 
     genBtn.addEventListener('click', ()=>{
-      const platform = platformEl.value;
-      const action   = actionEl.value;
-      const targets  = normalizeTargets(targetsEl.value);
+      // targets
+      const targets = [...targetsEl.querySelectorAll('input[type=url]')]
+        .map(i=>i.value.trim()).filter(Boolean).slice(0,5);
+      const validTargets = targets.length>0 && targets.every(isValidUrl);
+      targetErr.classList.toggle('hidden', validTargets);
 
-      if(targets.length === 0){
-        alert('Isi setidaknya satu URL target.');
-        return;
-      }
+      // tasks
+      const taskRows = [...tasksEl.querySelectorAll('.task-card')].slice(0,5);
+      const tasks = taskRows.map(r=>{
+        const platform = r.querySelector('.js-platform').value;
+        const action   = r.querySelector('.js-action').value;
+        const url      = r.querySelector('.js-url').value.trim();
+        if(!url) return null;
+        if(platform==='youtube') return { type: platform, action:'any', url };
+        return { type: platform, action, url };
+      }).filter(Boolean);
+      taskErr.classList.toggle('hidden', tasks.length>0);
 
-      // payload minimal yang dipakai di /task
-      const dataObj = {
-        platform, action, targets,
-        // label akan dibaca frontend task untuk menulis "Tugas YouTube any", dst.
-        label: labelForTask(platform, action),
-        // opsi tema/aksen custom kalau nanti kamu aktifkan
-        custom: {}
+      if(!validTargets || !tasks.length) return;
+
+      let required = parseInt(requiredCountEl.value||'1',10);
+      if(isNaN(required) || required<1) required=1;
+      if(required>tasks.length) required=tasks.length;
+
+      const accent = accentEl.value.trim();
+      if(!validHex(accent)){ alert('Accent hex tidak valid. Contoh: #10b981'); return; }
+
+      const payload = {
+        targets,
+        buttonText: "Buka Konten Sekarang",
+        requiredTasks: required,
+        tasks,
+        custom: { colorScheme: colorSchemeEl.value, accent: accent || null }
       };
 
-      const payload = encodeData(dataObj);
-      const url = buildTaskUrl(payload);
+      const encoded = encodePayload(payload);
+      // >>>>> perubahan penting: base ke domain baru pakai origin
+      const base = `${location.origin}/task/`;
+      const url  = `${base}?data=${encoded}`;
 
-      resultEl.value = url;
-      openBtn.href = url;
+      outLink.value = url; 
+      openTask.href = url; 
+      resultEl.classList.remove('hidden');
     });
 
-    copyBtn.addEventListener('click', ()=>{
-      const v = resultEl.value || '';
-      if(!v){ return; }
-      navigator.clipboard.writeText(v).then(()=>{
-        copyBtn.textContent = '✅ Disalin';
-        setTimeout(()=>{ copyBtn.textContent = '📋 Salin'; }, 1200);
-      });
+    // init awal: 1 target + 1 task
+    addTarget(); addTask();
+
+    document.getElementById('copyBtn').addEventListener('click', ()=>{
+      outLink.select(); document.execCommand('copy');
     });
   </script>
 </body>
