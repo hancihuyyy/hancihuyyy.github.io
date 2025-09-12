@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>SapiBersinar · Shortlink</title>
+  <title>hancihuyyy · Shortlink</title>
 
   <!-- GA (opsional) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
@@ -52,15 +52,6 @@
       animation: spin 1s linear infinite;
       margin-inline:auto;
     }
-    .input{
-      background: rgba(11,18,32,.65);
-      border:1px solid rgba(255,255,255,.12);
-      color:#e5e7eb;
-      border-radius:12px;
-      padding:.8rem 1rem;
-      transition: box-shadow .2s ease, border-color .2s ease, transform .08s ease;
-    }
-    .input:focus{ outline:none; border-color: var(--c1); box-shadow: 0 0 0 6px var(--ring); transform: translateY(-1px); }
     .chip{font-size:.8rem; padding:.25rem .6rem; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06)}
     .pill{padding:.35rem .6rem; border-radius:999px; background:rgba(14,165,233,.18); border:1px solid rgba(14,165,233,.35); font-size:.8rem}
     @keyframes spin{ to{ transform: rotate(360deg); } }
@@ -75,7 +66,7 @@
         <span class="chip">Short</span>
         <span class="muted text-sm">Pemendek tautan · Handler redirect</span>
       </div>
-      <a href="../" class="hidden sm:inline px-3 py-1.5 rounded-lg border border-white/15 text-sm">Beranda Quest</a>
+      <a href="/" class="hidden sm:inline px-3 py-1.5 rounded-lg border border-white/15 text-sm">Beranda</a>
     </header>
 
     <section class="mt-6">
@@ -98,11 +89,11 @@
         </div>
         <div class="flex gap-3">
           <a id="goBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold" href="#" target="_blank">Buka Sekarang</a>
-          <a href="../" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Beranda Quest</a>
+          <a href="/" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Beranda</a>
         </div>
       </div>
 
-      <!-- 404 (hanya fallback sekejap; kita redirect ke /quest/404) -->
+      <!-- 404 (fallback sekilas; setelah itu redirect ke /404) -->
       <div id="errBox" class="hidden mt-8 space-y-4">
         <div class="p-4 rounded-xl border border-red-400/40 bg-red-400/10">
           <div class="text-red-300 font-semibold">404 · Link Tidak Ditemukan</div>
@@ -113,11 +104,10 @@
 
     <div class="mt-8 divider"></div>
 
-    <!-- Bantuan kecil -->
     <section class="mt-6">
       <div class="flex items-center gap-2">
         <span class="chip">Tips</span>
-        <p class="text-sm muted">Format shortlink: <span class="text-white/90">/quest/short/&lt;key&gt;</span> → baca <code>quest/data.json</code>.</p>
+        <p class="text-sm muted">Format shortlink: <span class="text-white/90">/short/&lt;key&gt;</span> → baca <code>data.json</code> di root repo.</p>
       </div>
     </section>
   </main>
@@ -129,12 +119,10 @@
     const goBtn   = document.getElementById('goBtn');
     const errBox  = document.getElementById('errBox');
     const errMsg  = document.getElementById('errMsg');
-    const loading = document.getElementById('loading');
 
-    // Lokasi data mapping
-    const DATA_URL = 'https://sapibersinar.github.io/quest/data.json';
+    // Mapping di repo baru (root): https://hancihuyyy.github.io/data.json
+    const DATA_URL = `${location.origin}/data.json`;
 
-    // Ambil key dari path "/short/<key>" atau fallback ?k=/ ?key=
     function keyFromPathOrQuery(){
       const p = new URLSearchParams(location.search);
       if (p.get('k'))   return p.get('k');
@@ -144,7 +132,7 @@
       const segs = full.split('/');
       const si = segs.indexOf('short');
       if (si >= 0 && segs[si+1]) {
-        return decodeURIComponent(segs.slice(si+1).join('/')); // dukung nested
+        return decodeURIComponent(segs.slice(si+1).join('/'));
       }
       return null;
     }
@@ -166,20 +154,17 @@
           titleEl.textContent = 'Berhasil Ditemukan';
           descEl.textContent  = 'Sebentar, membuka halaman tujuan…';
           goBtn.href = target;
-
-          // sedikit jeda agar terasa
           setTimeout(()=>{ location.href = target; }, 800);
         }else{
           if(typeof gtag==='function'){ gtag('event','short_link_not_found',{ short_link_key:key }); }
-          hard404(`Shortlink untuk kunci "${key}" tidak ada di quest/data.json`);
+          hard404(`Shortlink untuk kunci "${key}" tidak ada di data.json`);
         }
       }catch(e){
         if(typeof gtag==='function'){ gtag('event','short_link_error',{ short_link_key:String(key), error_message:String(e) }); }
-        hard404(`Gagal memuat quest/data.json: ${e.message||e}`);
+        hard404(`Gagal memuat data.json: ${e.message||e}`);
       }
     }
 
-    // Redirect paksa ke /quest/404 dengan info query
     function hard404(reason){
       const q = new URLSearchParams({
         from: 'short',
@@ -187,10 +172,9 @@
         path: location.pathname,
         reason
       });
-      location.replace(`/quest/404/?${q.toString()}`);
+      location.replace(`/404/?${q.toString()}`);
     }
 
-    // boot
     const k = keyFromPathOrQuery();
     redirectByKey(k);
   </script>

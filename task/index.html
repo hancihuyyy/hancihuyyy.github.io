@@ -3,11 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SapiBersinar: Selesaikan Tugas</title>
+  <title>hancihuyyy · Selesaikan Tugas</title>
 
+  <!-- GA (opsional) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-K5JQPNMVEF');</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments)}
+    gtag('js',new Date()); gtag('config','G-K5JQPNMVEF');
+  </script>
 
+  <!-- Tailwind & font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -108,7 +114,7 @@
             <span class="pill">Tips</span>
           </div>
           <p id="ytText" class="opacity-90 leading-relaxed text-sm">
-            Buka link YouTube dari tugas, geser ke kiri pada bagian komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu.
+            Buka link YouTube dari tugas, geser ke kiri pada bagian komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—yang penting nyaman buatmu.
           </p>
         </div>
         <div class="divider mt-5"></div>
@@ -136,7 +142,7 @@
     const ytText       = document.getElementById('ytText');
     const toastWrap    = document.getElementById('toastWrap');
 
-    let data=null, doneCount=0, must=1;
+    let doneCount=0, must=1;
 
     const isValidUrl = (u)=>{ try{ new URL(u); return true; }catch{ return false; } };
 
@@ -202,8 +208,8 @@
       }
       if(t==='tiktok'){
         if(a==='follow') return 'Follow';
-        if(a==='like') return 'Like';
-        if(a==='comment') return 'Komentar';
+        if(a==='like')   return 'Like';
+        if(a==='comment')return 'Komentar';
       }
       if(t==='discord' && a==='join') return 'Join server';
       if(t==='blogger' && a==='visit') return 'Kunjungi halaman';
@@ -282,14 +288,14 @@
           try{ if(t.url && isValidUrl(t.url)) window.open(t.url,'_blank'); }catch(e){}
           if(finished || running) return;
           running=true;
-          sec = Number.isFinite(t.timer) && t.timer>0 ? Math.floor(t.timer) : SEC; // optional kalau nanti mau
+          sec = Number.isFinite(t.timer) && t.timer>0 ? Math.floor(t.timer) : SEC; // optional override di payload
           endAt = Date.now() + sec*1000;
           mini.style.width='0%';
           spin.classList.remove('hidden'); btn.classList.add('ring-soft');
           tick(); // start RAF
-          // fallback interval kalau tab pindah lama
+          // fallback interval kalau tab sleep
           ivId = setInterval(()=>{ if(Date.now()>=endAt) finish(); }, 250);
-          // anti-cheat ringan: kalau balik tab <1.5s setelah klik, perpanjang 1 detik
+          // anti-cheat ringan: kalau balik tab <1.5s, tambah 1 detik
           let hiddenAt=0;
           document.addEventListener('visibilitychange', ()=>{
             if(document.hidden) hiddenAt=Date.now();
@@ -302,13 +308,18 @@
     }
 
     function showYouTubeGuide(payload){
-      const guide = payload?.youtubeGuide || null;
-      const images = guide?.images && Array.isArray(guide.images) ? guide.images : [
-        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/1.jpg",
-        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/2.jpg",
-        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/3.jpg"
+      // Pakai gambar barumu sebagai default
+      const defaultImages = [
+        "https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/1.jpg",
+        "https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/2.jpg",
+        "https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/3.jpg"
       ];
-      const text = guide?.text || `Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Bisa juga like & subscribe, atau tonton beberapa detik.`;
+      const guide = payload?.youtubeGuide || null;
+      const images = (guide?.images && Array.isArray(guide.images) && guide.images.length)
+        ? guide.images
+        : defaultImages;
+
+      const text = guide?.text || `Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—sesuai kenyamananmu.`;
       ytText.textContent = text;
       ytImages.innerHTML = images.map(src => `
         <a href="${src}" target="_blank" class="block">
@@ -325,9 +336,8 @@
 
       try{
         const parsed = JSON.parse(atob(encoded));
-        if(!Array.isArray(parsed.targets) || !parsed.targets.length || !parsed.targets.every(isValidUrl)){
-          throw new Error('targets tidak valid');
-        }
+
+        // Validasi minimal
         if(!Array.isArray(parsed.tasks) || parsed.tasks.length===0){
           throw new Error('tasks tidak valid');
         }
@@ -345,7 +355,12 @@
         const pref = localStorage.getItem('questTheme'); if(pref) document.body.classList.toggle('light', pref==='light');
 
         renderTasks(parsed.tasks);
-        openBtn.href = parsed.targets[0] || '#';
+        // target utama (opsional): kalau ada, tombol aktif langsung mengarah ke target[0] setelah semua tugas terpenuhi
+        if (Array.isArray(parsed.targets) && parsed.targets.length && isValidUrl(parsed.targets[0])) {
+          openBtn.href = parsed.targets[0];
+        } else {
+          openBtn.href = '#';
+        }
         setProgress();
 
         const hasYouTubeTask = parsed.tasks.some(t => String(t.type).toLowerCase()==='youtube');
