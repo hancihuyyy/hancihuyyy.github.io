@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SapiBersinar · Buat Link Kode</title>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-K5JQPNMVEF');</script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--c1:#0ea5e9;--c2:#22c55e;--ring:rgba(14,165,233,.35)}
+    html,body{height:100%}
+    body{
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.16), transparent 60%),
+        radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.14), transparent 55%),
+        linear-gradient(180deg,#0b1220,#0b1220);
+      color:#e5e7eb;
+    }
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:fade .5s ease both}
+    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2));transition:transform .15s,box-shadow .2s}
+    .btn-grad:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(34,197,94,.25)}
+    .btn-muted{background:#475569}.btn-muted:hover{background:#334155}
+    .input{background:rgba(11,18,32,.65);border:1px solid rgba(255,255,255,.12);color:#e5e7eb;border-radius:12px;padding:.8rem 1rem;transition:box-shadow .2s,border-color .2s,transform .08s}
+    .input:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 6px var(--ring);transform:translateY(-1px)}
+    .chip{font-size:.8rem;padding:.25rem .6rem;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06)}
+    .fade{animation:fade .5s ease both}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="chip">Creator</span><span class="text-sm opacity-80">Buat link kode</span>
+    </div>
+    <a href="../../source-code/" class="hidden sm:inline chip">Lihat Kode</a>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+    <section class="card p-6 sm:p-8 mt-4">
+      <h1 class="text-2xl sm:text-3xl font-extrabold">Buat Link Kode</h1>
+      <p class="mt-2 opacity-80">Masukkan judul, jenis, dan isi kode. Klik “Buat URL Kode”.</p>
+
+      <div class="grid gap-4 sm:grid-cols-2 mt-8">
+        <div class="grid gap-2">
+          <label class="text-sm font-semibold opacity-90">Judul</label>
+          <input id="titleInput" class="input" placeholder="Contoh: Auto Farm Script"/>
+        </div>
+        <div class="grid gap-2">
+          <label class="text-sm font-semibold opacity-90">Jenis Kode</label>
+          <select id="typeInput" class="input">
+            <option value="" disabled selected>Pilih jenis</option>
+            <option>lua</option><option>javascript</option><option>python</option>
+            <option>html</option><option>css</option><option>php</option>
+            <option>java</option><option>csharp</option><option>cpp</option>
+            <option>json</option><option>markdown</option><option>xml</option>
+            <option>plaintext</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="text-sm font-semibold opacity-90">Kode</label>
+        <textarea id="codeInput" rows="12" class="input w-full"></textarea>
+      </div>
+
+      <div class="mt-6 grid sm:grid-cols-[auto_auto_1fr] gap-3 items-center">
+        <button id="genBtn" class="px-5 py-3 rounded-xl btn-grad text-white font-bold">Buat URL Kode</button>
+        <button id="resetBtn" class="px-5 py-3 rounded-xl btn-muted text-white font-semibold">Reset</button>
+        <p id="err" class="text-sm text-red-400 hidden">Lengkapi semua field.</p>
+      </div>
+
+      <div id="result" class="mt-6 hidden fade">
+        <label class="text-sm font-semibold opacity-90">URL</label>
+        <textarea id="out" readonly class="input w-full h-24"></textarea>
+        <div class="mt-3 flex gap-3">
+          <button id="copyBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold">Salin</button>
+          <a id="openBtn" target="_blank" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Buka</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s)=>document.querySelector(s);
+    const titleInput = $('#titleInput');
+    const typeInput  = $('#typeInput');
+    const codeInput  = $('#codeInput');
+    const genBtn     = $('#genBtn');
+    const resetBtn   = $('#resetBtn');
+    const errEl      = $('#err');
+    const resultEl   = $('#result');
+    const outEl      = $('#out');
+    const openBtn    = $('#openBtn');
+    const copyBtn    = $('#copyBtn');
+
+    const encode = (obj)=> btoa(encodeURIComponent(JSON.stringify(obj)));
+
+    genBtn.addEventListener('click', ()=>{
+      errEl.classList.add('hidden');
+      const title = titleInput.value.trim();
+      const type  = (typeInput.value||'').trim();
+      const code  = codeInput.value.trim();
+      if(!title || !type || !code){ errEl.classList.remove('hidden'); return; }
+
+      const data = { title, type, code };
+      const viewer = new URL('../../source-code/', location.href).toString();
+      const url = `${viewer}?data=${encode(data)}`;
+
+      outEl.value = url;
+      openBtn.href = url;
+      resultEl.classList.remove('hidden');
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      titleInput.value = ''; typeInput.value=''; codeInput.value='';
+      resultEl.classList.add('hidden'); outEl.value='';
+      errEl.classList.add('hidden');
+    });
+
+    copyBtn.addEventListener('click', ()=>{
+      outEl.select(); document.execCommand('copy');
+    });
+
+    // auto-fill jika ada ?data=
+    const p = new URLSearchParams(location.search);
+    if(p.get('data')){
+      try{
+        const parsed = JSON.parse(decodeURIComponent(atob(p.get('data'))));
+        titleInput.value = parsed.title || '';
+        typeInput.value  = parsed.type || '';
+        codeInput.value  = parsed.code || '';
+        genBtn.click();
+      }catch(e){}
+    }
+  </script>
+</body>
+</html>

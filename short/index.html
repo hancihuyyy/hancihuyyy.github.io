@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SapiBersinar · Shortlink</title>
+
+  <!-- GA (opsional) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config','G-K5JQPNMVEF');
+  </script>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{ --c1:#0ea5e9; --c2:#22c55e; --ring:rgba(14,165,233,.35); }
+    html,body{height:100%}
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.16), transparent 60%),
+        radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.14), transparent 55%),
+        linear-gradient(180deg, #0b1220, #0b1220);
+      color:#e5e7eb;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:100%; max-width:760px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.28);
+      animation: fade .6s ease both;
+    }
+    .btn-grad{
+      background-image: linear-gradient(to right, var(--c1), var(--c2));
+      transition: transform .15s ease, box-shadow .2s ease;
+    }
+    .btn-grad:hover{ transform: translateY(-1px); box-shadow:0 10px 30px rgba(34,197,94,.25); }
+    .muted{ color:#a3a3a3 }
+    .spin{
+      inline-size: 64px; block-size: 64px; border-radius: 999px;
+      border: 6px solid rgba(255,255,255,.12);
+      border-top-color: #22c55e;
+      animation: spin 1s linear infinite;
+      margin-inline:auto;
+    }
+    .input{
+      background: rgba(11,18,32,.65);
+      border:1px solid rgba(255,255,255,.12);
+      color:#e5e7eb;
+      border-radius:12px;
+      padding:.8rem 1rem;
+      transition: box-shadow .2s ease, border-color .2s ease, transform .08s ease;
+    }
+    .input:focus{ outline:none; border-color: var(--c1); box-shadow: 0 0 0 6px var(--ring); transform: translateY(-1px); }
+    .chip{font-size:.8rem; padding:.25rem .6rem; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06)}
+    .pill{padding:.35rem .6rem; border-radius:999px; background:rgba(14,165,233,.18); border:1px solid rgba(14,165,233,.35); font-size:.8rem}
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+    @keyframes fade{ from{opacity:0; transform: translateY(8px)} to{opacity:1; transform: none} }
+    .divider{height:1px; background:linear-gradient(to right, transparent, rgba(255,255,255,.18), transparent)}
+  </style>
+</head>
+<body>
+  <main class="card p-6 sm:p-8">
+    <header class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="chip">Short</span>
+        <span class="muted text-sm">Pemendek tautan · Handler redirect</span>
+      </div>
+      <a href="../" class="hidden sm:inline px-3 py-1.5 rounded-lg border border-white/15 text-sm">Beranda Quest</a>
+    </header>
+
+    <section class="mt-6">
+      <h1 id="title" class="text-2xl sm:text-3xl font-extrabold">Mengalihkan Link Anda…</h1>
+      <p id="desc" class="mt-2 muted">Harap tunggu sebentar, kami sedang memeriksa tujuan tautan.</p>
+
+      <!-- Loader -->
+      <div id="loading" class="mt-8 spin"></div>
+
+      <!-- OK -->
+      <div id="okBox" class="hidden mt-8 space-y-4">
+        <div class="p-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-emerald-300 font-semibold">Berhasil ditemukan</div>
+              <div class="text-sm muted">Anda akan dialihkan secara otomatis…</div>
+            </div>
+            <span class="pill">Redirect</span>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <a id="goBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold" href="#" target="_blank">Buka Sekarang</a>
+          <a href="../" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Beranda Quest</a>
+        </div>
+      </div>
+
+      <!-- 404 (hanya fallback sekejap; kita redirect ke /quest/404) -->
+      <div id="errBox" class="hidden mt-8 space-y-4">
+        <div class="p-4 rounded-xl border border-red-400/40 bg-red-400/10">
+          <div class="text-red-300 font-semibold">404 · Link Tidak Ditemukan</div>
+          <div id="errMsg" class="text-sm muted mt-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-8 divider"></div>
+
+    <!-- Bantuan kecil -->
+    <section class="mt-6">
+      <div class="flex items-center gap-2">
+        <span class="chip">Tips</span>
+        <p class="text-sm muted">Format shortlink: <span class="text-white/90">/quest/short/&lt;key&gt;</span> → baca <code>quest/data.json</code>.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const titleEl = document.getElementById('title');
+    const descEl  = document.getElementById('desc');
+    const okBox   = document.getElementById('okBox');
+    const goBtn   = document.getElementById('goBtn');
+    const errBox  = document.getElementById('errBox');
+    const errMsg  = document.getElementById('errMsg');
+    const loading = document.getElementById('loading');
+
+    // Lokasi data mapping
+    const DATA_URL = 'https://sapibersinar.github.io/quest/data.json';
+
+    // Ambil key dari path "/short/<key>" atau fallback ?k=/ ?key=
+    function keyFromPathOrQuery(){
+      const p = new URLSearchParams(location.search);
+      if (p.get('k'))   return p.get('k');
+      if (p.get('key')) return p.get('key');
+
+      const full = location.pathname.replace(/\/+$/,'');
+      const segs = full.split('/');
+      const si = segs.indexOf('short');
+      if (si >= 0 && segs[si+1]) {
+        return decodeURIComponent(segs.slice(si+1).join('/')); // dukung nested
+      }
+      return null;
+    }
+
+    async function redirectByKey(key){
+      if(!key) return hard404('Key shortlink tidak ditemukan pada URL.');
+
+      titleEl.textContent = 'Mengalihkan Link Anda…';
+      descEl.textContent  = 'Mencari tujuan tautan berdasarkan key shortlink.';
+
+      try{
+        const res = await fetch(DATA_URL, { cache: 'no-store' });
+        if(!res.ok) throw new Error(`Gagal memuat data.json (${res.status})`);
+        const map = await res.json();
+
+        const target = map[key];
+        if(target){
+          if(typeof gtag==='function'){ gtag('event','short_link_redirect',{ short_link_key:key, target_url:target }); }
+          titleEl.textContent = 'Berhasil Ditemukan';
+          descEl.textContent  = 'Sebentar, membuka halaman tujuan…';
+          goBtn.href = target;
+
+          // sedikit jeda agar terasa
+          setTimeout(()=>{ location.href = target; }, 800);
+        }else{
+          if(typeof gtag==='function'){ gtag('event','short_link_not_found',{ short_link_key:key }); }
+          hard404(`Shortlink untuk kunci "${key}" tidak ada di quest/data.json`);
+        }
+      }catch(e){
+        if(typeof gtag==='function'){ gtag('event','short_link_error',{ short_link_key:String(key), error_message:String(e) }); }
+        hard404(`Gagal memuat quest/data.json: ${e.message||e}`);
+      }
+    }
+
+    // Redirect paksa ke /quest/404 dengan info query
+    function hard404(reason){
+      const q = new URLSearchParams({
+        from: 'short',
+        k: keyFromPathOrQuery() || '',
+        path: location.pathname,
+        reason
+      });
+      location.replace(`/quest/404/?${q.toString()}`);
+    }
+
+    // boot
+    const k = keyFromPathOrQuery();
+    redirectByKey(k);
+  </script>
+</body>
+</html>

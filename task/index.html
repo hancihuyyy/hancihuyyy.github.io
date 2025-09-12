@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SapiBersinar: Selesaikan Tugas</title>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-K5JQPNMVEF');</script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --c1:#0ea5e9; --c2:#22c55e; --accent:#10b981;
+      --bg:#0b1220; --card:rgba(255,255,255,.05); --border:rgba(255,255,255,.08); --text:#e5e7eb; --muted:#a3a3a3;
+      --ring:rgba(14,165,233,.35);
+    }
+    body.light{
+      --bg:#f8fafc; --card:#ffffff; --border:#e5e7eb; --text:#0f172a; --muted:#475569;
+    }
+    html,body{height:100%}
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--bg);
+      color: var(--text);
+      background-image:
+        radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.10), transparent 60%),
+        radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.12), transparent 55%);
+    }
+    .card{background:var(--card); border:1px solid var(--border); backdrop-filter:blur(8px); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.20)}
+    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2)); transition:transform .15s, box-shadow .2s;}
+    .btn-grad:hover{transform:translateY(-1px); box-shadow:0 10px 30px rgba(34,197,94,.25)}
+    .btn-muted{background:#475569} .btn-muted:hover{background:#334155}
+    body.light .btn-muted{background:#e2e8f0} body.light .btn-muted:hover{background:#cbd5e1}
+    .tag{font-size:.8rem; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
+    body.light .tag{background:#f1f5f9}
+    .item{border:1px solid var(--border); border-radius:14px; padding:1rem; background:rgba(255,255,255,.04); animation:fade .5s ease both}
+    body.light .item{background:#ffffff}
+    .progress-wrap{height:10px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden}
+    body.light .progress-wrap{background:#e2e8f0}
+    .progress-bar{height:100%; width:0%; background-image:linear-gradient(to right,var(--c1),var(--c2))}
+    .mini-wrap{height:6px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden}
+    body.light .mini-wrap{background:#e2e8f0}
+    .mini-bar{height:100%; width:0%; background:var(--accent)}
+    .pill{padding:.35rem .6rem; border-radius:999px; background:rgba(14,165,233,.18); border:1px solid rgba(14,165,233,.35); font-size:.8rem}
+    .spin{animation:spin 1s linear infinite; border:3px solid rgba(0,0,0,.15); border-top-color:var(--accent); border-radius:999px; inline-size:18px; block-size:18px;}
+    body:not(.light) .spin{border-color:rgba(255,255,255,.18)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+    .divider{height:1px; background:linear-gradient(to right, transparent, var(--border), transparent)}
+    .ring-soft{box-shadow:0 0 0 6px var(--ring)}
+    /* toast */
+    #toastWrap{position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:10px; z-index:50}
+    .toast{background:var(--card); border:1px solid var(--border); padding:10px 12px; border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.22); animation:toastIn .2s ease both}
+    @keyframes toastIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  </style>
+</head>
+<body>
+  <div id="toastWrap"></div>
+
+  <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="tag">Task</div>
+      <p class="text-sm" style="color:var(--muted)">Selesaikan tugas untuk membuka konten</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="themeBtn" class="px-3 py-1.5 rounded-lg btn-muted text-sm font-semibold">🌙/☀️</button>
+      <a href="../create/" class="hidden sm:inline pill">Buat Link</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+    <section class="card p-6 sm:p-8 mt-4">
+      <h1 id="pageTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Memuat…</h1>
+      <p id="subTitle" class="mt-2" style="color:var(--muted)">Klik “Lakukan Tugas” pada tiap baris.</p>
+
+      <!-- Progress -->
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm" style="color:var(--muted)">Kemajuan</span>
+          <span id="progressText" class="text-sm font-semibold">0/0</span>
+        </div>
+        <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+
+      <!-- Tugas -->
+      <div class="mt-8">
+        <h2 class="text-lg font-bold">Tugas</h2>
+        <div id="tasksWrap" class="mt-3 grid gap-3"></div>
+      </div>
+
+      <!-- Open Content -->
+      <div class="mt-8 grid sm:grid-cols-[1fr_auto] gap-3 items-center">
+        <p class="text-sm" style="color:var(--muted)">Tombol aktif setelah jumlah tugas terpenuhi.</p>
+        <a id="openBtn" class="px-5 py-3 rounded-xl btn-grad text-white font-bold pointer-events-none opacity-50 select-none">Buka Konten Sekarang</a>
+      </div>
+
+      <!-- YouTube Guide -->
+      <div id="ytGuide" class="mt-10 hidden">
+        <div class="card p-4" style="border:1px solid rgba(56,189,248,.35)">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-bold">Panduan YouTube</span>
+              <span class="tag">Baca dulu</span>
+            </div>
+            <span class="pill">Tips</span>
+          </div>
+          <p id="ytText" class="opacity-90 leading-relaxed text-sm">
+            Buka link YouTube dari tugas, geser ke kiri pada bagian komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu.
+          </p>
+        </div>
+        <div class="divider mt-5"></div>
+        <div id="ytImages" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5"></div>
+      </div>
+
+      <p id="errorBox" class="hidden mt-6" style="color:#f87171; font-weight:600">Data tautan tidak valid.</p>
+    </section>
+  </main>
+
+  <script>
+    const SEC = 11; // durasi hitung per tugas
+
+    // Elemen
+    const themeBtn     = document.getElementById('themeBtn');
+    const pageTitle    = document.getElementById('pageTitle');
+    const subTitle     = document.getElementById('subTitle');
+    const progressEl   = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const tasksWrap    = document.getElementById('tasksWrap');
+    const openBtn      = document.getElementById('openBtn');
+    const errorBox     = document.getElementById('errorBox');
+    const ytGuideBox   = document.getElementById('ytGuide');
+    const ytImages     = document.getElementById('ytImages');
+    const ytText       = document.getElementById('ytText');
+    const toastWrap    = document.getElementById('toastWrap');
+
+    let data=null, doneCount=0, must=1;
+
+    const isValidUrl = (u)=>{ try{ new URL(u); return true; }catch{ return false; } };
+
+    // THEME
+    function applyThemeFromLocal(){
+      const pref = localStorage.getItem('questTheme') || 'dark';
+      document.body.classList.toggle('light', pref==='light');
+    }
+    themeBtn.addEventListener('click', ()=>{
+      const nowLight = !document.body.classList.contains('light');
+      document.body.classList.toggle('light', nowLight);
+      localStorage.setItem('questTheme', nowLight ? 'light' : 'dark');
+    });
+    applyThemeFromLocal();
+
+    // COLOR SCHEME + ACCENT
+    function applyScheme(s, accentHex){
+      const schemes = {
+        modernBlue:['#0ea5e9','#6366f1'],
+        energeticGreen:['#22c55e','#10b981'],
+        vibrantPurple:['#a855f7','#6366f1'],
+        sunsetOrange:['#f97316','#ef4444'],
+        coolGray:['#64748b','#0ea5e9']
+      };
+      const pick = schemes[s] || schemes.modernBlue;
+      document.documentElement.style.setProperty('--c1', pick[0]);
+      document.documentElement.style.setProperty('--c2', pick[1]);
+      if(accentHex){
+        document.documentElement.style.setProperty('--accent', accentHex);
+      }
+    }
+
+    // PROGRESS GLOBAL
+    function setProgress(){
+      progressText.textContent = `${Math.min(doneCount, must)}/${must}`;
+      const pct = Math.min(100, Math.round((Math.min(doneCount, must) / must) * 100));
+      progressEl.style.width = pct + '%';
+      if(doneCount >= must){
+        openBtn.classList.remove('opacity-50','pointer-events-none','select-none');
+      }else{
+        openBtn.classList.add('opacity-50','pointer-events-none','select-none');
+      }
+    }
+
+    // PLATFORM + LABEL AKSI
+    function platformIconName(type){
+      const t = String(type||'custom').toLowerCase();
+      const icon = { youtube:'▶️', tiktok:'🎵', roblox:'🎮', discord:'💬', whatsapp:'💬', blogger:'📝', custom:'🔗' }[t] || '🔗';
+      const name = { youtube:'YouTube', tiktok:'TikTok', roblox:'Roblox', discord:'Discord', whatsapp:'WhatsApp', blogger:'Blogger', custom:'Custom' }[t] || 'Custom';
+      return { icon, name };
+    }
+    function labelForAction(type, action){
+      const t=String(type||'').toLowerCase(), a=String(action||'').toLowerCase();
+      if(t==='youtube') return 'Any';
+      if(t==='whatsapp'){
+        if(a==='any') return 'Masuk ke komunitas';
+        if(a==='join')return 'Gabung komunitas';
+      }
+      if(t==='roblox'){
+        if(a==='ikut') return 'Ikuti akun Roblox';
+        if(a==='join') return 'Gabung group Roblox';
+        if(a==='follow') return 'Ikuti';
+      }
+      if(t==='tiktok'){
+        if(a==='follow') return 'Follow';
+        if(a==='like') return 'Like';
+        if(a==='comment') return 'Komentar';
+      }
+      if(t==='discord' && a==='join') return 'Join server';
+      if(t==='blogger' && a==='visit') return 'Kunjungi halaman';
+      if(t==='custom'  && a==='open')  return 'Buka link';
+      return a ? a[0].toUpperCase()+a.slice(1) : 'Aksi';
+    }
+
+    // TOAST
+    function showToast(msg){
+      const el = document.createElement('div');
+      el.className='toast';
+      el.textContent = msg;
+      toastWrap.appendChild(el);
+      setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(6px)'; }, 2200);
+      setTimeout(()=>{ el.remove(); }, 2600);
+    }
+
+    // RENDER TASKS (dengan progress bar mini & timer 11 detik)
+    function renderTasks(tasks){
+      tasksWrap.innerHTML='';
+      tasks.forEach((t,idx)=>{
+        const {icon,name} = platformIconName(t.type);
+        const label = labelForAction(t.type, t.action);
+
+        const row = document.createElement('div');
+        row.className='item';
+
+        row.innerHTML=`
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="tag">${icon} ${name}</span>
+                <span class="tag">${label}</span>
+                <span class="tag">Tugas ${idx+1}</span>
+              </div>
+              <div class="mt-2 text-sm" style="color:var(--muted)"><span class="js-status">Siap</span></div>
+              <div class="mini-wrap mt-3"><div class="mini-bar js-mini"></div></div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="spin hidden js-spin"></div>
+              <button class="px-3 py-2 rounded-lg btn-grad text-white text-sm font-semibold js-open">Lakukan Tugas</button>
+            </div>
+          </div>
+        `;
+
+        const btn   = row.querySelector('.js-open');
+        const spin  = row.querySelector('.js-spin');
+        const stat  = row.querySelector('.js-status');
+        const mini  = row.querySelector('.js-mini');
+
+        let running=false, finished=false, endAt=0, rafId=0, ivId=0, sec=SEC;
+
+        function tick(){
+          const left = Math.max(0, Math.ceil((endAt - Date.now())/1000));
+          const progress = 1 - (left / sec);
+          mini.style.width = `${Math.max(0, Math.min(1, progress))*100}%`;
+          stat.textContent = left>0 ? `Sedang progres (${left} detik)…` : 'Selesai';
+          if(left<=0){ finish(); return; }
+          rafId = requestAnimationFrame(tick);
+        }
+        function finish(){
+          if(finished) return;
+          finished=true; running=false;
+          cancelAnimationFrame(rafId); clearInterval(ivId);
+          spin.classList.add('hidden');
+          btn.classList.add('pointer-events-none','opacity-50','select-none');
+          btn.textContent='Selesai';
+          row.style.opacity='.75';
+          mini.style.width='100%';
+          stat.textContent='Selesai';
+          doneCount++; setProgress();
+          showToast(`Tugas ${idx+1} selesai`);
+        }
+
+        btn.addEventListener('click', ()=>{
+          try{ if(t.url && isValidUrl(t.url)) window.open(t.url,'_blank'); }catch(e){}
+          if(finished || running) return;
+          running=true;
+          sec = Number.isFinite(t.timer) && t.timer>0 ? Math.floor(t.timer) : SEC; // optional kalau nanti mau
+          endAt = Date.now() + sec*1000;
+          mini.style.width='0%';
+          spin.classList.remove('hidden'); btn.classList.add('ring-soft');
+          tick(); // start RAF
+          // fallback interval kalau tab pindah lama
+          ivId = setInterval(()=>{ if(Date.now()>=endAt) finish(); }, 250);
+          // anti-cheat ringan: kalau balik tab <1.5s setelah klik, perpanjang 1 detik
+          let hiddenAt=0;
+          document.addEventListener('visibilitychange', ()=>{
+            if(document.hidden) hiddenAt=Date.now();
+            else if(hiddenAt && Date.now()-hiddenAt<1500){ endAt += 1000; hiddenAt=0; }
+          }, { once:true });
+        });
+
+        tasksWrap.appendChild(row);
+      });
+    }
+
+    function showYouTubeGuide(payload){
+      const guide = payload?.youtubeGuide || null;
+      const images = guide?.images && Array.isArray(guide.images) ? guide.images : [
+        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/1.jpg",
+        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/2.jpg",
+        "https://raw.githubusercontent.com/SapiBersinar/quest/refs/heads/main/gambar/3.jpg"
+      ];
+      const text = guide?.text || `Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Bisa juga like & subscribe, atau tonton beberapa detik.`;
+      ytText.textContent = text;
+      ytImages.innerHTML = images.map(src => `
+        <a href="${src}" target="_blank" class="block">
+          <img src="${src}" alt="Panduan YouTube" class="w-full object-cover rounded-xl" style="border:1px solid var(--border)">
+        </a>
+      `).join('');
+      ytGuideBox.classList.remove('hidden');
+    }
+
+    (function init(){
+      const params = new URLSearchParams(location.search);
+      const encoded = params.get('data');
+      if(!encoded){ errorBox.classList.remove('hidden'); subTitle.textContent = 'Parameter data tidak ditemukan.'; return; }
+
+      try{
+        const parsed = JSON.parse(atob(encoded));
+        if(!Array.isArray(parsed.targets) || !parsed.targets.length || !parsed.targets.every(isValidUrl)){
+          throw new Error('targets tidak valid');
+        }
+        if(!Array.isArray(parsed.tasks) || parsed.tasks.length===0){
+          throw new Error('tasks tidak valid');
+        }
+
+        const btnText = (parsed.buttonText && typeof parsed.buttonText==='string' && parsed.buttonText.trim().length)
+          ? parsed.buttonText.trim() : 'Buka Konten Sekarang';
+        openBtn.textContent = btnText;
+
+        must = Math.max(1, Math.min(parsed.requiredTasks ?? 1, parsed.tasks.length));
+        pageTitle.textContent = `Selesaikan ${must} Tugas untuk Membuka Konten`;
+        subTitle.textContent  = `Klik “Lakukan Tugas” pada tiap baris.`;
+
+        // warna + accent + theme
+        applyScheme(parsed.custom?.colorScheme || 'modernBlue', parsed.custom?.accent || null);
+        const pref = localStorage.getItem('questTheme'); if(pref) document.body.classList.toggle('light', pref==='light');
+
+        renderTasks(parsed.tasks);
+        openBtn.href = parsed.targets[0] || '#';
+        setProgress();
+
+        const hasYouTubeTask = parsed.tasks.some(t => String(t.type).toLowerCase()==='youtube');
+        if(parsed.youtubeGuide || hasYouTubeTask){ showYouTubeGuide(parsed); }
+      }catch(e){
+        console.error(e);
+        errorBox.classList.remove('hidden');
+        pageTitle.textContent = 'Terjadi Kesalahan';
+        subTitle.textContent = 'Data tautan tidak valid atau rusak.';
+      }
+    })();
+  </script>
+</body>
+</html>

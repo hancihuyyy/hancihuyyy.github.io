@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Alihkan…</title>
+<style>
+  html,body{height:100%} body{margin:0;display:grid;place-items:center;background:#0b1220;color:#e5e7eb;font-family:system-ui,Inter,Arial}
+  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:20px 22px;box-shadow:0 14px 40px rgba(0,0,0,.35);width:min(560px,92vw)}
+  .muted{opacity:.8}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div id="msg">Mengarahkan…</div>
+    <div class="muted" style="font-size:.9rem;margin-top:.5rem">Jika tidak pindah otomatis, <a id="fallback" href="../">kembali</a>.</div>
+  </div>
+
+<script>
+(function(){
+  // path penuh mis: /quest/short/dorongan+angin
+  var path = location.pathname;
+
+  // 1) Router untuk /quest/short/<key>
+  //    Alihkan ke /quest/short/?k=<key>
+  var shortPrefix = '/quest/short/';
+  if (path.startsWith(shortPrefix)) {
+    var key = decodeURIComponent(path.slice(shortPrefix.length)); // ambil sisa path (dorongan+angin)
+    if (!key || key === '' || key === 'index.html') {
+      // biarkan /quest/short/ normal
+      location.replace('/quest/short/');
+      return;
+    }
+    location.replace('/quest/short/?k=' + encodeURIComponent(key));
+    return;
+  }
+
+  // 2) Bisa tambah router lain (mis. /quest/source-code/<key>) kalau mau di masa depan.
+  //    Default: kembali ke beranda quest
+  document.getElementById('msg').textContent = 'Halaman tidak ditemukan. Mengarahkan ke beranda Quest…';
+  document.getElementById('fallback').href = '/quest/';
+  setTimeout(function(){ location.replace('/quest/'); }, 1200);
+})();
+</script>
+</body>
+</html>
