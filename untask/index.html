@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>hancihuyyy · UnTask (Kunci Kode)</title>
+
+  <!-- Tailwind & font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- highlight.js -->
+  <link id="hlTheme" rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+
+  <style>
+    :root{
+      --c1:#0ea5e9; --c2:#22c55e; --acc:#22c55e;
+      --bg:#0b1220; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.12); --text:#e5e7eb; --muted:#a3a3a3;
+    }
+    html,body{height:100%}
+    body{
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.14), transparent 60%),
+        radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.12), transparent 55%),
+        linear-gradient(180deg,var(--bg),var(--bg));
+      color:var(--text);
+    }
+    .card{background:var(--card); border:1px solid var(--border); backdrop-filter:blur(8px); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2)); transition:transform .15s, box-shadow .2s;}
+    .btn-grad:hover{transform:translateY(-1px); box-shadow:0 10px 30px rgba(34,197,94,.25)}
+    .tag{font-size:.8rem; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
+    .muted{color:var(--muted)}
+    .divider{height:1px; background:linear-gradient(to right, transparent, var(--border), transparent)}
+    .item{border:1px solid var(--border); border-radius:14px; padding:1rem; background:rgba(255,255,255,.04)}
+    .mini-wrap{height:6px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden}
+    .mini-bar{height:100%; width:0%; background:var(--acc)}
+    .progress-wrap{height:10px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden}
+    .progress-bar{height:100%; width:0%; background-image:linear-gradient(to right,var(--c1),var(--c2))}
+    .spin{animation:spin 1s linear infinite; border:3px solid rgba(255,255,255,.18); border-top-color:var(--acc); border-radius:999px; inline-size:18px; block-size:18px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+    .fade{animation:fade .5s ease both}
+
+    /* code panel (scrollable, not long page) */
+    pre{
+      background:#0f172a; border:1px solid var(--border); border-radius:14px;
+      padding:1.1rem; white-space:pre; overflow:auto;
+      max-height: 56vh; /* cukup pendek, bisa digulir */
+    }
+    /* scrollbar halus */
+    pre::-webkit-scrollbar{height:10px;width:10px}
+    pre::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
+    pre::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
+
+    /* blur lock */
+    .locked{filter: blur(7px); pointer-events:none; user-select:none}
+    .code-mask{position:absolute; inset:0; display:grid; place-items:center; border-radius:14px;
+      background:linear-gradient(180deg, rgba(11,18,32,.60), rgba(11,18,32,.66)); border:1px dashed rgba(255,255,255,.18)}
+    .code-mask > div{ text-align:center; max-width: 48ch; }
+    .pill{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;padding:.5rem .9rem;
+      border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);}
+    .pill--grad{background-image:linear-gradient(to right,var(--c1),var(--c2));color:#fff;border-color:transparent}
+
+    /* loader overlay (awal; 1 kalimat acak) */
+    .loader-wrap{position:fixed; inset:0; display:grid; place-items:center; z-index:40;
+      background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(11,18,32,.88)); backdrop-filter: blur(6px);}
+    .loader-card{width:min(720px,92vw); border-radius:18px; border:1px solid var(--border);
+      background:var(--card); box-shadow:0 18px 60px rgba(0,0,0,.35); padding:22px 22px 18px;}
+    .loader-line{font-weight:800;font-size:1.15rem}
+
+    /* Info Bar */
+    #infoBar{position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; justify-content:center; pointer-events:none}
+    .info-inner{pointer-events:auto; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
+      max-width:72rem; width:calc(100% - 1rem); margin:.5rem auto; padding:.5rem .75rem;
+      border-radius:12px; border:1px solid var(--border); background:rgba(15,23,42,.6); backdrop-filter: blur(8px);
+      box-shadow:0 10px 30px rgba(0,0,0,.25); font-size:.84rem; color:#e5e7eb}
+    .info-chip{display:inline-flex; align-items:center; gap:.4rem; padding:.28rem .55rem; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
+    @media (max-width:640px){ .info-inner{font-size:.8rem} }
+  </style>
+</head>
+<body>
+  <!-- LOADER (1 kalimat acak, tidak berganti-ganti) -->
+  <div id="loader" class="loader-wrap">
+    <div class="loader-card">
+      <div class="tag">Menyiapkan Halaman</div>
+      <h2 id="loaderLine" class="loader-line mt-3">sedang membuat…</h2>
+      <p class="muted text-sm mt-1">sebentar ya, tampilan lagi dirapikan</p>
+      <div class="mt-5" style="height:10px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden">
+        <span style="display:block;height:100%;width:0;background-image:linear-gradient(90deg,var(--c1),var(--acc));animation:grow 1.4s ease-in-out infinite"></span>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes grow{0%{width:0}50%{width:90%}100%{width:0}}</style>
+
+  <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="tag">UnTask</span>
+      <span class="muted text-sm">Kunci kode — buka setelah tugas terpenuhi</span>
+    </div>
+    <a class="tag" href="../create/uncode/">Buat UnTask</a>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-28">
+    <section class="card p-6 sm:p-8 mt-4">
+      <h1 id="title" class="text-2xl sm:text-3xl font-extrabold">Memuat…</h1>
+      <p id="subtitle" class="mt-2 muted">Selesaikan tugas untuk membuka kode.</p>
+
+      <!-- Progress global -->
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm muted">Kemajuan</span>
+          <span id="progressText" class="text-sm font-semibold">0/0</span>
+        </div>
+        <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+
+      <!-- Tugas -->
+      <div class="mt-8">
+        <h2 class="text-lg font-bold">Tugas</h2>
+        <div id="tasksWrap" class="mt-3 grid gap-3"></div>
+      </div>
+
+      <!-- Panduan YouTube -->
+      <div id="ytGuide" class="mt-8">
+        <div class="card p-4" style="border:1px solid rgba(56,189,248,.35)">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-bold">Panduan YouTube</span>
+              <span class="tag">Baca dulu</span>
+            </div>
+            <span class="tag">Tips</span>
+          </div>
+          <p id="ytText" class="opacity-90 leading-relaxed text-sm">
+            Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu.
+          </p>
+        </div>
+        <div class="divider mt-5"></div>
+        <div id="ytImages" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+          <a href="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/1.jpg" target="_blank" class="block">
+            <img src="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/1.jpg" alt="Panduan YouTube 1" class="w-full object-cover rounded-xl" style="border:1px solid var(--border)">
+          </a>
+          <a href="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/2.jpg" target="_blank" class="block">
+            <img src="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/2.jpg" alt="Panduan YouTube 2" class="w-full object-cover rounded-xl" style="border:1px solid var(--border)">
+          </a>
+          <a href="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/3.jpg" target="_blank" class="block">
+            <img src="https://raw.githubusercontent.com/hancihuyyy/hancihuyyy.github.io/refs/heads/main/gambar/3.jpg" alt="Panduan YouTube 3" class="w-full object-cover rounded-xl" style="border:1px solid var(--border)">
+          </a>
+        </div>
+      </div>
+
+      <!-- KODE (blur sampai terbuka) -->
+      <div class="mt-10">
+        <h2 class="text-lg font-bold">Kode</h2>
+        <div class="mt-3 relative">
+          <pre id="pre"><code id="code" class="language-plaintext"></code></pre>
+          <div id="mask" class="code-mask">
+            <div>
+              <h3 class="text-xl font-extrabold mb-2">Kode terkunci</h3>
+              <p class="muted text-sm">Selesaikan jumlah tugas yang diminta untuk membuka tampilan kode.</p>
+              <div class="mt-4">
+                <span class="pill pill--grad">Tersisa: <b id="leftNeed">-</b> tugas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p id="okBar" class="hidden mt-3 text-xs muted">Kode dimuat.</p>
+        <p id="errBox" class="hidden mt-3 text-sm" style="color:#f87171">Gagal memuat kode.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Info Bar -->
+  <div id="infoBar" class="fade">
+    <div class="info-inner">
+      <span class="info-chip" id="ibName">Nama: -</span>
+      <span class="info-chip" id="ibLang">Bahasa: -</span>
+      <span class="info-chip" id="ibSize">Ukuran: -</span>
+      <span class="info-chip" id="ibLines">Baris: -</span>
+      <span class="info-chip" id="ibNeed">Butuh: -</span>
+      <span class="info-chip" id="ibLoaded">Dimuat: -</span>
+    </div>
+  </div>
+
+  <script>
+    const SEC = 11; // detik per tugas
+    const phrases = [
+      'sedang membuat…',
+      'lagi mikirin kode…',
+      'otw ngambil file…',
+      'mengurai Base64…',
+      'memanggil highlight.js…',
+      'sedang merapikan baris…',
+      'lagi cari kurung yang hilang…',
+      'pemanggilan variabel…',
+      'kompilasi imajinasi…',
+      'saling sapa dengan semicolon…',
+      'mencari bug yang pemalu…',
+      'mendorong bit ke layar…',
+      'sinkronisasi naskah…',
+      'memasang tema gelap…',
+      'mengikat dependensi…',
+      'membelai bracket…',
+      'menghela napas… lalu lanjut…',
+      'menyusun huruf jadi logika…',
+      'berburu koma yang nyasar…',
+      'merapikan spasi tab…',
+      'menyelaraskan baris…',
+      'menyisir komentar lama…',
+      'mengecek tanda titik koma…',
+      'mendeteksi variabel liar…',
+      'meluruskan kurung siku…'
+    ];
+    // 1 kalimat random, tidak berubah saat loading
+    document.getElementById('loaderLine').textContent = phrases[Math.floor(Math.random()*phrases.length)];
+
+    const $ = (s)=>document.querySelector(s);
+    const pre      = $('#pre');
+    const codeEl   = $('#code');
+    const mask     = $('#mask');
+    const leftNeed = $('#leftNeed');
+
+    const pageTitle    = $('#title');
+    const progressEl   = $('#progressBar');
+    const progressText = $('#progressText');
+    const tasksWrap    = $('#tasksWrap');
+    const subtitle     = $('#subtitle');
+    const okBar        = $('#okBar');
+    const errBox       = $('#errBox');
+
+    const ibName = $('#ibName'), ibLang=$('#ibLang'), ibSize=$('#ibSize'), ibLines=$('#ibLines'), ibNeed=$('#ibNeed'), ibLoaded=$('#ibLoaded');
+
+    let must=1, done=0, codeLoaded=false, codeMeta={title:'-', type:'plaintext', code:''};
+
+    function setProgress(){
+      progressText.textContent = `${Math.min(done, must)}/${must}`;
+      const pct = Math.min(100, Math.round((Math.min(done, must)/must)*100));
+      progressEl.style.width = pct + '%';
+      leftNeed.textContent = Math.max(0, must - done);
+      ibNeed.textContent = `Butuh: ${must}`;
+      if(done>=must){
+        unlockCode();
+      }
+    }
+    function unlockCode(){
+      mask.style.display='none';
+      pre.classList.remove('locked');
+    }
+
+    function formatBytes(n){
+      if(!Number.isFinite(n)) return '-';
+      const u=['B','KB','MB','GB']; let i=0;
+      while(n>=1024 && i<u.length-1){n/=1024;i++;}
+      return (i===0?n:n.toFixed(1))+' '+u[i];
+    }
+    function updateInfoBar(){
+      const te = new TextEncoder();
+      const bytes = te.encode(codeMeta.code||'').length;
+      const lines = (codeMeta.code||'').split(/\r?\n/).length;
+      ibName.textContent = `Nama: ${codeMeta.title||'-'}.${extFromLang(codeMeta.type)}`;
+      ibLang.textContent = `Bahasa: ${(codeMeta.type||'plaintext').toUpperCase()}`;
+      ibSize.textContent = `Ukuran: ${formatBytes(bytes)}`;
+      ibLines.textContent = `Baris: ${lines}`;
+      const dt=new Date(),pad=(x)=>String(x).padStart(2,'0');
+      ibLoaded.textContent = `Dimuat: ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
+    }
+
+    function extFromLang(lang){
+      const m={javascript:'js',lua:'lua',python:'py',html:'html',css:'css',php:'php',java:'java',csharp:'cs',cpp:'cpp',json:'json',markdown:'md',xml:'xml',plaintext:'txt'};
+      return m[(lang||'').toLowerCase()]||'txt';
+    }
+
+    function isValidUrl(u){ try{ new URL(u); return true; }catch{ return false; } }
+
+    function labelTask(i){ return `Tugas ${i}`; }
+
+    function renderTasks(list){
+      tasksWrap.innerHTML = '';
+      list.forEach((t, i)=>{
+        const row = document.createElement('div');
+        row.className = 'item';
+
+        row.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="tag">▶️ YouTube</span>
+                <span class="tag">Any</span>
+                <span class="tag">${labelTask(i+1)}</span>
+              </div>
+              <div class="mt-2 text-sm muted"><span class="js-status">Siap</span></div>
+              <div class="mini-wrap mt-3"><div class="mini-bar js-mini"></div></div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="spin hidden js-spin"></div>
+              <button class="px-3 py-2 rounded-lg btn-grad text-white text-sm font-semibold js-open">Lakukan Tugas</button>
+            </div>
+          </div>
+        `;
+
+        const btn   = row.querySelector('.js-open');
+        const spin  = row.querySelector('.js-spin');
+        const stat  = row.querySelector('.js-status');
+        const mini  = row.querySelector('.js-mini');
+
+        let running=false, finished=false, endAt=0, rafId=0, sec=SEC, ivId=0;
+
+        function tick(){
+          const left = Math.max(0, Math.ceil((endAt - Date.now())/1000));
+          const progress = 1 - (left / sec);
+          mini.style.width = `${Math.max(0, Math.min(1, progress))*100}%`;
+          stat.textContent = left>0 ? `Sedang progres (${left} detik)…` : 'Selesai';
+          if(left<=0){ finish(); return; }
+          rafId = requestAnimationFrame(tick);
+        }
+        function finish(){
+          if(finished) return;
+          finished=true; running=false;
+          cancelAnimationFrame(rafId); clearInterval(ivId);
+          spin.classList.add('hidden');
+          btn.classList.add('pointer-events-none','opacity-50','select-none');
+          btn.textContent='Selesai';
+          row.style.opacity='.78';
+          mini.style.width='100%';
+          stat.textContent='Selesai';
+          done++; setProgress();
+        }
+
+        btn.addEventListener('click', ()=>{
+          try{ if(t.url && isValidUrl(t.url)) window.open(t.url,'_blank'); }catch(e){}
+          if(finished || running) return;
+          running=true;
+          endAt = Date.now() + sec*1000;
+          mini.style.width='0%';
+          spin.classList.remove('hidden');
+          tick();
+          ivId = setInterval(()=>{ if(Date.now()>=endAt) finish(); }, 300);
+          // anti cepat-cepat balik tab
+          let hiddenAt=0;
+          document.addEventListener('visibilitychange', ()=>{
+            if(document.hidden) hiddenAt=Date.now();
+            else if(hiddenAt && Date.now()-hiddenAt<1500){ endAt += 1000; hiddenAt=0; }
+          }, { once:true });
+        });
+
+        tasksWrap.appendChild(row);
+      });
+    }
+
+    function setLang(lang){
+      const l=(lang||'plaintext').toLowerCase();
+      codeEl.className = `language-${l}`;
+    }
+
+    function showOk(){
+      okBar.classList.remove('hidden'); errBox.classList.add('hidden');
+    }
+    function showErr(msg){
+      errBox.textContent = msg || 'Gagal memuat kode.';
+      errBox.classList.remove('hidden');
+    }
+
+    function decodeData(d){
+      // payload dibuat pakai btoa(JSON.stringify(obj)) di create/uncode
+      try{ return JSON.parse(atob(d)); }catch(e){ return null; }
+    }
+
+    // Boot
+    (async ()=>{
+      // set loader phrase
+      const loader = document.getElementById('loader');
+
+      const p = new URLSearchParams(location.search);
+      const encoded = p.get('data');
+
+      let loadErr = null; const t0 = Date.now();
+
+      try{
+        if(!encoded) throw new Error('Parameter data tidak ditemukan.');
+        const parsed = decodeData(encoded);
+        if(!parsed || !parsed.code || !Array.isArray(parsed.tasks) || parsed.tasks.length===0){
+          throw new Error('Data tidak valid.');
+        }
+        // code
+        codeMeta = {
+          title: parsed.code.title || 'Kode Tanpa Judul',
+          type : parsed.code.type  || 'plaintext',
+          code : parsed.code.code  || ''
+        };
+        pageTitle.textContent = codeMeta.title;
+        setLang(codeMeta.type);
+        codeEl.textContent = codeMeta.code;
+        hljs.highlightElement(codeEl);
+        codeLoaded = true; showOk();
+
+        // tasks
+        const tasks = parsed.tasks.map(t => ({ type:'youtube', action:'any', url: String(t.url||'') }));
+        must = Math.max(1, Math.min(parsed.requiredTasks ?? 1, tasks.length));
+        subtitle.textContent = `Selesaikan ${must} tugas untuk membuka kode.`;
+        renderTasks(tasks);
+        setProgress(); updateInfoBar();
+
+        // lock initial
+        pre.classList.add('locked');
+      }catch(e){
+        console.error(e);
+        loadErr = e; showErr(e.message||String(e));
+      }
+
+      // minimal 800ms biar loader nggak “kedip”
+      const elapsed = Date.now()-t0;
+      const remain  = Math.max(0, 800 - elapsed);
+      setTimeout(()=>{ loader.style.opacity='0'; loader.style.pointerEvents='none'; setTimeout(()=>loader.remove(), 260); }, remain);
+    })();
+  </script>
+</body>
+</html>

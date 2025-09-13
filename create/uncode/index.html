@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>hancihuyyy · Buat UnTask (Kunci Kode)</title>
+
+  <!-- Tailwind & font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{ --c1:#0ea5e9; --c2:#22c55e; --ring:rgba(14,165,233,.35); }
+    html,body{height:100%}
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(99,102,241,.16), transparent 60%),
+        radial-gradient(800px 420px at 10% 110%, rgba(14,165,233,.14), transparent 55%),
+        linear-gradient(180deg, #0b1220, #0b1220);
+      color:#e5e7eb;
+    }
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2));transition:transform .15s,box-shadow .2s}
+    .btn-grad:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(34,197,94,.25)}
+    .btn-muted{background:#475569}.btn-muted:hover{background:#334155}
+    .chip{font-size:.8rem;padding:.25rem .6rem;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06)}
+    .input{background:rgba(11,18,32,.65);border:1px solid rgba(255,255,255,.12);color:#e5e7eb;border-radius:12px;padding:.8rem 1rem;transition:box-shadow .2s,border-color .2s,transform .08s}
+    .input:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 6px var(--ring);transform:translateY(-1px)}
+    .task-card{border:1px dashed rgba(255,255,255,.15);border-radius:16px;padding:1rem;background:rgba(255,255,255,.04)}
+    .k-label{font-size:.85rem;font-weight:600;opacity:.9}
+    .k-err{color:#f87171;font-size:.85rem}
+    @media (max-width: 640px){ .grid2{grid-template-columns:1fr!important} }
+  </style>
+</head>
+<body>
+  <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="chip">Creator</span>
+      <span class="text-sm opacity-80">Kunci Kode dengan Tugas (YouTube only)</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <a class="chip" href="../../source-code/">Lihat Kode</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+    <section class="card p-6 sm:p-8 mt-4">
+      <h1 class="text-2xl sm:text-3xl font-extrabold">Buat UnTask (Kunci Kode)</h1>
+      <p class="mt-2 opacity-80">Isi info kode, tambahkan tugas YouTube (any). Hasilnya menuju <code>/untask</code> dengan kode di-blur sampai tugas selesai.</p>
+
+      <!-- Bagian Kode -->
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-2">
+          <label class="k-label">Judul</label>
+          <input id="titleInput" class="input" placeholder="Contoh: Script Dorongan Angin"/>
+        </div>
+        <div class="grid gap-2">
+          <label class="k-label">Bahasa Kode</label>
+          <select id="typeInput" class="input">
+            <option value="" disabled selected>Pilih bahasa</option>
+            <option>lua</option><option>javascript</option><option>python</option>
+            <option>html</option><option>css</option><option>php</option>
+            <option>java</option><option>csharp</option><option>cpp</option>
+            <option>json</option><option>markdown</option><option>xml</option>
+            <option>plaintext</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="k-label">Isi Kode</label>
+        <textarea id="codeInput" rows="12" class="input w-full" placeholder="Tulis kode di sini..."></textarea>
+      </div>
+
+      <!-- Bagian Tugas (YouTube only) -->
+      <div class="mt-10">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">Tugas YouTube (maks. 5)</h2>
+          <button id="addTaskBtn" class="px-3 py-2 rounded-lg btn-grad text-white text-sm font-semibold">+ Tambah Tugas</button>
+        </div>
+        <div id="tasks" class="grid gap-3"></div>
+        <p id="taskErr" class="k-err mt-2 hidden">Tambah minimal 1 tugas dengan URL YouTube.</p>
+      </div>
+
+      <!-- Wajib Diselesaikan -->
+      <div class="mt-8 grid grid2" style="display:grid;grid-template-columns:280px 1fr;gap:1rem">
+        <div class="card p-4">
+          <label class="k-label block mb-2" for="requiredCount">Jumlah tugas wajib</label>
+          <input id="requiredCount" type="number" min="1" value="1" class="input w-full" />
+          <p class="text-xs opacity-70 mt-2">Tidak boleh melebihi total tugas.</p>
+        </div>
+      </div>
+
+      <!-- Aksi -->
+      <div class="mt-8 grid sm:grid-cols-2 gap-3">
+        <button id="genBtn" class="px-5 py-4 rounded-xl btn-grad text-white font-bold text-lg">Buat Link UnTask</button>
+        <button id="resetBtn" class="px-5 py-4 rounded-xl btn-muted text-white font-semibold">Reset</button>
+      </div>
+
+      <!-- Hasil -->
+      <div id="result" class="mt-8 hidden">
+        <label class="k-label block mb-2" for="outLink">Link UnTask</label>
+        <textarea id="outLink" readonly class="input w-full h-28"></textarea>
+        <div class="mt-3 flex gap-3">
+          <button id="copyBtn" class="px-4 py-2 rounded-lg btn-grad text-white font-semibold">Salin</button>
+          <a id="openTask" target="_blank" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold">Buka</a>
+        </div>
+      </div>
+
+      <p id="err" class="k-err mt-4 hidden">Lengkapi semua field kode dan minimal 1 tugas.</p>
+    </section>
+  </main>
+
+  <script>
+    const $  = (s)=>document.querySelector(s);
+    const h  = (html)=>{ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; };
+    const isValidUrl = (u)=>{ try{ new URL(u); return true; }catch{ return false; } };
+
+    const titleInput = $('#titleInput');
+    const typeInput  = $('#typeInput');
+    const codeInput  = $('#codeInput');
+
+    const tasksEl      = $('#tasks');
+    const addTaskBtn   = $('#addTaskBtn');
+    const taskErr      = $('#taskErr');
+
+    const requiredCountEl = $('#requiredCount');
+
+    const genBtn   = $('#genBtn');
+    const resetBtn = $('#resetBtn');
+    const errEl    = $('#err');
+    const resultEl = $('#result');
+    const outLink  = $('#outLink');
+    const openTask = $('#openTask');
+    const copyBtn  = $('#copyBtn');
+
+    function taskRow(){
+      const row = h(`
+        <div class="task-card grid gap-3 md:grid-cols-[1fr_auto]">
+          <div class="grid gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="chip">YouTube</span>
+              <span class="chip">Any</span>
+              <span class="chip">Tugas</span>
+            </div>
+            <label class="k-label mt-2">URL Tugas (YouTube)</label>
+            <input type="url" class="input js-url" placeholder="https://www.youtube.com/watch?v=..." />
+            <p class="text-xs opacity-70">YouTube selalu “Any”.</p>
+          </div>
+          <div class="flex items-start justify-end gap-2">
+            <button class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold">Hapus</button>
+          </div>
+        </div>
+      `);
+      row.querySelector('button').addEventListener('click', ()=> row.remove());
+      return row;
+    }
+
+    function addTask(){
+      if (tasksEl.children.length >= 5) return;
+      tasksEl.appendChild(taskRow());
+    }
+    addTaskBtn.addEventListener('click', addTask);
+
+    resetBtn.addEventListener('click', ()=>{
+      titleInput.value=''; typeInput.value=''; codeInput.value='';
+      tasksEl.innerHTML=''; addTask();
+      requiredCountEl.value = 1;
+      resultEl.classList.add('hidden'); outLink.value='';
+      errEl.classList.add('hidden'); taskErr.classList.add('hidden');
+    });
+
+    function collectTasks(){
+      const rows = [...tasksEl.querySelectorAll('.task-card')];
+      const tasks = rows.map(r=>{
+        const url = r.querySelector('.js-url').value.trim();
+        if(!url) return null;
+        return { type:'youtube', action:'any', url };
+      }).filter(Boolean);
+      return tasks;
+    }
+
+    function encodePayload(obj){
+      // konsisten dengan generator sebelumnya: base64 dari JSON string
+      return btoa(JSON.stringify(obj));
+    }
+
+    genBtn.addEventListener('click', ()=>{
+      errEl.classList.add('hidden'); taskErr.classList.add('hidden');
+
+      const title = titleInput.value.trim();
+      const type  = (typeInput.value||'').trim();
+      const code  = codeInput.value.trim();
+
+      const tasks = collectTasks();
+
+      if(!title || !type || !code){ errEl.textContent='Lengkapi semua field kode.'; errEl.classList.remove('hidden'); return; }
+      if(tasks.length === 0 || !tasks.every(t=>isValidUrl(t.url))){ taskErr.classList.remove('hidden'); return; }
+
+      let required = parseInt(requiredCountEl.value||'1',10);
+      if(isNaN(required) || required<1) required = 1;
+      if(required > tasks.length) required = tasks.length;
+
+      // payload untuk /untask
+      const payload = {
+        code: { title, type, code },
+        tasks,
+        requiredTasks: required,
+        // opsional: kamu bisa tambahkan youtubeGuide dsb nanti kalau mau.
+      };
+
+      const encoded = encodePayload(payload);
+      const base = `${location.origin}/untask/`;
+      const url  = `${base}?data=${encoded}`;
+
+      outLink.value = url;
+      openTask.href = url;
+      resultEl.classList.remove('hidden');
+    });
+
+    copyBtn.addEventListener('click', ()=>{
+      outLink.select(); document.execCommand('copy');
+    });
+
+    // init awal
+    addTask();
+  </script>
+</body>
+</html>
