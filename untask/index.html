@@ -56,10 +56,10 @@
     @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
     .fade{animation:fade .5s ease both}
 
-    /* code panel TANPA scroll (biarkan panjang) */
+    /* code TANPA scroll (biarkan panjang ke bawah) */
     pre{
       background:#0f172a; border:1px solid var(--border); border-radius:14px;
-      padding:1.1rem; white-space:pre-wrap; word-wrap:break-word; /* panjang ke bawah */
+      padding:1.1rem; white-space:pre-wrap; word-wrap:break-word;
     }
 
     /* blur lock */
@@ -161,7 +161,7 @@
           </div>
           <p id="ytText" class="opacity-90 leading-relaxed text-sm">
             Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan.
-            Aksi ini membantu kreator: sinyal interaksi bikin video lebih mudah direkomendasikan, dan bisa dorong performa channel.
+            Aksi ini membantu kreator: interaksi mengirim sinyal positif ke sistem rekomendasi, sehingga video lebih berpeluang tampil ke audiens lain.
             Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu. Setelah itu kembali ke halaman ini.
           </p>
         </div>
@@ -230,7 +230,6 @@
       'merapikan spasi tab…','menyelaraskan baris…','menyisir komentar lama…',
       'mengecek tanda titik koma…','mendeteksi variabel liar…','meluruskan kurung siku…'
     ];
-    // 1 kalimat random, tidak berubah saat loading
     document.getElementById('loaderLine').textContent = phrases[Math.floor(Math.random()*phrases.length)];
 
     // confetti mini
@@ -294,7 +293,7 @@
     const copyBtn    = $('#copyBtn');
     const downloadBtn= $('#downloadBtn');
 
-    let must=1, done=0, codeLoaded=false, codeMeta={title:'-', type:'plaintext', code:''};
+    let must=1, done=0, codeMeta={title:'-', type:'plaintext', code:''};
 
     function setProgress(){
       progressText.textContent = `${Math.min(done, must)}/${must}`;
@@ -307,7 +306,6 @@
     function unlockCode(){
       mask.style.display='none';
       pre.classList.remove('locked');
-      // aktifkan tools
       toolBtns.classList.remove('opacity-50','pointer-events-none','select-none');
       showToast('Semua tugas selesai — kode terbuka!');
       confettiBurst();
@@ -400,7 +398,7 @@
           spin.classList.remove('hidden');
           tick();
           ivId = setInterval(()=>{ if(Date.now()>=endAt) finish(); }, 300);
-          // anti cepat-cepat balik tab
+          // anti cepat-cepat balik tab (nambah 1s kalau balik terlalu cepat)
           let hiddenAt=0;
           document.addEventListener('visibilitychange', ()=>{
             if(document.hidden) hiddenAt=Date.now();
@@ -425,11 +423,12 @@
       errBox.classList.remove('hidden');
     }
 
-    // decoder aman (coba base64 langsung, kalau gagal coba decodeURIComponent dulu)
+    // decoder aman (pad base64 jika '=' hilang + variasi encodeURIComponent)
+    function padB64(s){ return s + '==='.slice((s.length + 3) % 4); }
     function safeDecode(b64){
-      try{ return JSON.parse(atob(b64)); }catch(e1){
-        try{ return JSON.parse(decodeURIComponent(atob(b64))); }catch(e2){
-          try{ return JSON.parse(atob(decodeURIComponent(b64))); }catch(e3){
+      try{ return JSON.parse(atob(padB64(b64))); }catch(e1){
+        try{ return JSON.parse(decodeURIComponent(atob(padB64(b64)))); }catch(e2){
+          try{ return JSON.parse(atob(padB64(decodeURIComponent(b64)))); }catch(e3){
             return null;
           }
         }
@@ -456,9 +455,11 @@
       try{
         if(!encoded) throw new Error('Parameter data tidak ditemukan.');
         const parsed = safeDecode(encoded);
-        if(!parsed || !parsed.code || !Array.isArray(parsed.tasks) || parsed.tasks.length===0){
-          throw new Error('Data tidak valid.');
+        if(!parsed) throw new Error('Data tidak valid (gagal decode).');
+        if(!parsed.code || !Array.isArray(parsed.tasks) || parsed.tasks.length===0){
+          throw new Error('Data tidak valid (field code/tasks kosong).');
         }
+
         // code
         codeMeta = {
           title: parsed.code.title || 'Kode Tanpa Judul',
@@ -469,9 +470,9 @@
         setLang(codeMeta.type);
         codeEl.textContent = codeMeta.code;
         hljs.highlightElement(codeEl);
-        codeLoaded = true; showOk();
+        showOk();
 
-        // aktifkan unduh & set nama file (setelah unlock baru bisa diklik)
+        // siapkan unduh (aktif setelah unlock)
         setDownload(codeMeta.title, extFromLang(codeMeta.type), codeMeta.code);
 
         // tasks
