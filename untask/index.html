@@ -42,6 +42,7 @@
     .card{background:var(--card); border:1px solid var(--border); backdrop-filter:blur(8px); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.25)}
     .btn-grad{background-image:linear-gradient(to right,var(--c1),var(--c2)); transition:transform .15s, box-shadow .2s;}
     .btn-grad:hover{transform:translateY(-1px); box-shadow:0 10px 30px rgba(34,197,94,.25)}
+    .btn-muted{background:#475569}.btn-muted:hover{background:#334155}
     .tag{font-size:.8rem; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
     .muted{color:var(--muted)}
     .divider{height:1px; background:linear-gradient(to right, transparent, var(--border), transparent)}
@@ -55,16 +56,11 @@
     @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
     .fade{animation:fade .5s ease both}
 
-    /* code panel (scrollable, not long page) */
+    /* code panel TANPA scroll (biarkan panjang) */
     pre{
       background:#0f172a; border:1px solid var(--border); border-radius:14px;
-      padding:1.1rem; white-space:pre; overflow:auto;
-      max-height: 56vh; /* cukup pendek, bisa digulir */
+      padding:1.1rem; white-space:pre-wrap; word-wrap:break-word; /* panjang ke bawah */
     }
-    /* scrollbar halus */
-    pre::-webkit-scrollbar{height:10px;width:10px}
-    pre::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
-    pre::-webkit-scrollbar-track{background:rgba(255,255,255,.06)}
 
     /* blur lock */
     .locked{filter: blur(7px); pointer-events:none; user-select:none}
@@ -75,36 +71,55 @@
       border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);}
     .pill--grad{background-image:linear-gradient(to right,var(--c1),var(--c2));color:#fff;border-color:transparent}
 
-    /* loader overlay (awal; 1 kalimat acak) */
+    /* loader overlay (5 detik; 1 kalimat random, animasi kaya) */
     .loader-wrap{position:fixed; inset:0; display:grid; place-items:center; z-index:40;
-      background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(11,18,32,.88)); backdrop-filter: blur(6px);}
+      background:
+        radial-gradient(600px 300px at 15% 100%, rgba(14,165,233,.20), transparent 60%),
+        radial-gradient(600px 300px at 85% 0%, rgba(34,197,94,.18), transparent 60%),
+        linear-gradient(180deg,rgba(11,18,32,.92),rgba(11,18,32,.88));
+      backdrop-filter: blur(8px);
+    }
     .loader-card{width:min(720px,92vw); border-radius:18px; border:1px solid var(--border);
-      background:var(--card); box-shadow:0 18px 60px rgba(0,0,0,.35); padding:22px 22px 18px;}
+      background:var(--card); box-shadow:0 18px 60px rgba(0,0,0,.35); padding:22px 22px 18px; overflow:hidden}
     .loader-line{font-weight:800;font-size:1.15rem}
+    .dots{display:flex; gap:8px; align-items:center;margin-top:10px}
+    .dot{width:10px;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--c1),var(--acc));opacity:.9;animation:bounce 1s infinite}
+    .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}.dot:nth-child(4){animation-delay:.36s}
+    @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.6}40%{transform:translateY(-6px);opacity:1}}
+    .bar{height:8px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:14px}
+    .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--acc));animation:grow 1.5s ease-in-out infinite}
+    @keyframes grow{0%{width:0}50%{width:90%}100%{width:0}}
+    .wave{position:relative;height:42px;overflow:hidden;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);margin-top:12px}
+    .wave::before,.wave::after{
+      content:""; position:absolute; inset:-60% -20% auto -20%; height:160%; border-radius:50%;
+      background:radial-gradient(circle at 50% 50%, var(--acc), transparent 60%);
+      animation:float 3s ease-in-out infinite;
+      opacity:.35; filter:blur(14px)
+    }
+    .wave::after{animation-delay:1.2s; opacity:.25}
+    @keyframes float{0%,100%{transform:translateX(-10%) translateY(6px)}50%{transform:translateX(60%) translateY(-6px)}}
 
-    /* Info Bar */
-    #infoBar{position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; justify-content:center; pointer-events:none}
-    .info-inner{pointer-events:auto; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
-      max-width:72rem; width:calc(100% - 1rem); margin:.5rem auto; padding:.5rem .75rem;
-      border-radius:12px; border:1px solid var(--border); background:rgba(15,23,42,.6); backdrop-filter: blur(8px);
-      box-shadow:0 10px 30px rgba(0,0,0,.25); font-size:.84rem; color:#e5e7eb}
-    .info-chip{display:inline-flex; align-items:center; gap:.4rem; padding:.28rem .55rem; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
-    @media (max-width:640px){ .info-inner{font-size:.8rem} }
+    /* toast + confetti canvas */
+    #toastWrap{position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:10px; z-index:60}
+    .toast{background:var(--card); border:1px solid var(--border); padding:10px 12px; border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.22); animation:toastIn .2s ease both}
+    @keyframes toastIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+    #confetti{position:fixed; inset:0; pointer-events:none; z-index:55}
   </style>
 </head>
 <body>
-  <!-- LOADER (1 kalimat acak, tidak berganti-ganti) -->
+  <!-- LOADER (5 detik, 1 kalimat acak) -->
   <div id="loader" class="loader-wrap">
     <div class="loader-card">
       <div class="tag">Menyiapkan Halaman</div>
-      <h2 id="loaderLine" class="loader-line mt-3">sedang membuat…</h2>
+      <h2 id="loaderLine" class="loader-line mt-2">sedang membuat…</h2>
       <p class="muted text-sm mt-1">sebentar ya, tampilan lagi dirapikan</p>
-      <div class="mt-5" style="height:10px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden">
-        <span style="display:block;height:100%;width:0;background-image:linear-gradient(90deg,var(--c1),var(--acc));animation:grow 1.4s ease-in-out infinite"></span>
-      </div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="bar"><span></span></div>
+      <div class="wave"></div>
     </div>
   </div>
-  <style>@keyframes grow{0%{width:0}50%{width:90%}100%{width:0}}</style>
+  <canvas id="confetti"></canvas>
+  <div id="toastWrap"></div>
 
   <header class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -145,7 +160,9 @@
             <span class="tag">Tips</span>
           </div>
           <p id="ytText" class="opacity-90 leading-relaxed text-sm">
-            Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan. Setelah itu kembali ke halaman ini. Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu.
+            Buka link YouTube dari tugas, geser ke kiri pada area komentar sampai muncul tombol “Beri hype”, lalu tekan.
+            Aksi ini membantu kreator: sinyal interaksi bikin video lebih mudah direkomendasikan, dan bisa dorong performa channel.
+            Alternatif: like & subscribe, atau tonton beberapa detik—sesuai nyamanmu. Setelah itu kembali ke halaman ini.
           </p>
         </div>
         <div class="divider mt-5"></div>
@@ -164,7 +181,13 @@
 
       <!-- KODE (blur sampai terbuka) -->
       <div class="mt-10">
-        <h2 class="text-lg font-bold">Kode</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold">Kode</h2>
+          <div id="toolBtns" class="flex gap-2 opacity-50 pointer-events-none select-none">
+            <button id="copyBtn" class="px-3 py-1.5 rounded-lg btn-grad text-white text-sm font-semibold">Salin Kode</button>
+            <a id="downloadBtn" class="px-3 py-1.5 rounded-lg bg-slate-600 hover:bg-slate-500 text-white text-sm font-semibold" download>Unduh</a>
+          </div>
+        </div>
         <div class="mt-3 relative">
           <pre id="pre"><code id="code" class="language-plaintext"></code></pre>
           <div id="mask" class="code-mask">
@@ -196,36 +219,60 @@
   </div>
 
   <script>
-    const SEC = 11; // detik per tugas
+    const SEC = 11; // detik per tugas (mulai saat tombol diklik)
     const phrases = [
-      'sedang membuat…',
-      'lagi mikirin kode…',
-      'otw ngambil file…',
-      'mengurai Base64…',
-      'memanggil highlight.js…',
-      'sedang merapikan baris…',
-      'lagi cari kurung yang hilang…',
-      'pemanggilan variabel…',
-      'kompilasi imajinasi…',
-      'saling sapa dengan semicolon…',
-      'mencari bug yang pemalu…',
-      'mendorong bit ke layar…',
-      'sinkronisasi naskah…',
-      'memasang tema gelap…',
-      'mengikat dependensi…',
-      'membelai bracket…',
-      'menghela napas… lalu lanjut…',
-      'menyusun huruf jadi logika…',
-      'berburu koma yang nyasar…',
-      'merapikan spasi tab…',
-      'menyelaraskan baris…',
-      'menyisir komentar lama…',
-      'mengecek tanda titik koma…',
-      'mendeteksi variabel liar…',
-      'meluruskan kurung siku…'
+      'sedang membuat…','lagi mikirin kode…','otw ngambil file…','mengurai Base64…',
+      'memanggil highlight.js…','sedang merapikan baris…','lagi cari kurung yang hilang…',
+      'pemanggilan variabel…','kompilasi imajinasi…','saling sapa dengan semicolon…',
+      'mencari bug yang pemalu…','mendorong bit ke layar…','sinkronisasi naskah…',
+      'memasang tema gelap…','mengikat dependensi…','membelai bracket…',
+      'menghela napas… lalu lanjut…','menyusun huruf jadi logika…','berburu koma yang nyasar…',
+      'merapikan spasi tab…','menyelaraskan baris…','menyisir komentar lama…',
+      'mengecek tanda titik koma…','mendeteksi variabel liar…','meluruskan kurung siku…'
     ];
     // 1 kalimat random, tidak berubah saat loading
     document.getElementById('loaderLine').textContent = phrases[Math.floor(Math.random()*phrases.length)];
+
+    // confetti mini
+    function confettiBurst(){
+      const c = document.getElementById('confetti');
+      const ctx = c.getContext('2d');
+      c.width = innerWidth; c.height = innerHeight;
+      const parts = Array.from({length: 100}, ()=>({
+        x: Math.random()*c.width,
+        y: -20 - Math.random()*c.height*0.5,
+        r: 4+Math.random()*4,
+        vx: -1+Math.random()*2,
+        vy: 2+Math.random()*3,
+        a: Math.random()*Math.PI*2,
+        va: -0.1+Math.random()*0.2,
+        col: `hsl(${Math.floor(Math.random()*360)},90%,60%)`
+      }));
+      let t=0;
+      function tick(){
+        t++;
+        ctx.clearRect(0,0,c.width,c.height);
+        parts.forEach(p=>{
+          p.x+=p.vx; p.y+=p.vy; p.a+=p.va;
+          ctx.save();
+          ctx.translate(p.x,p.y); ctx.rotate(p.a);
+          ctx.fillStyle=p.col;
+          ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+          ctx.restore();
+        });
+        if(t<120) requestAnimationFrame(tick); else ctx.clearRect(0,0,c.width,c.height);
+      }
+      tick();
+    }
+    function showToast(msg){
+      const wrap = document.getElementById('toastWrap');
+      const el = document.createElement('div');
+      el.className='toast';
+      el.textContent=msg;
+      wrap.appendChild(el);
+      setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(6px)'; },2200);
+      setTimeout(()=> el.remove(),2600);
+    }
 
     const $ = (s)=>document.querySelector(s);
     const pre      = $('#pre');
@@ -243,6 +290,10 @@
 
     const ibName = $('#ibName'), ibLang=$('#ibLang'), ibSize=$('#ibSize'), ibLines=$('#ibLines'), ibNeed=$('#ibNeed'), ibLoaded=$('#ibLoaded');
 
+    const toolBtns   = $('#toolBtns');
+    const copyBtn    = $('#copyBtn');
+    const downloadBtn= $('#downloadBtn');
+
     let must=1, done=0, codeLoaded=false, codeMeta={title:'-', type:'plaintext', code:''};
 
     function setProgress(){
@@ -251,13 +302,15 @@
       progressEl.style.width = pct + '%';
       leftNeed.textContent = Math.max(0, must - done);
       ibNeed.textContent = `Butuh: ${must}`;
-      if(done>=must){
-        unlockCode();
-      }
+      if(done>=must){ unlockCode(); }
     }
     function unlockCode(){
       mask.style.display='none';
       pre.classList.remove('locked');
+      // aktifkan tools
+      toolBtns.classList.remove('opacity-50','pointer-events-none','select-none');
+      showToast('Semua tugas selesai — kode terbuka!');
+      confettiBurst();
     }
 
     function formatBytes(n){
@@ -265,6 +318,10 @@
       const u=['B','KB','MB','GB']; let i=0;
       while(n>=1024 && i<u.length-1){n/=1024;i++;}
       return (i===0?n:n.toFixed(1))+' '+u[i];
+    }
+    function extFromLang(lang){
+      const m={javascript:'js',lua:'lua',python:'py',html:'html',css:'css',php:'php',java:'java',csharp:'cs',cpp:'cpp',json:'json',markdown:'md',xml:'xml',plaintext:'txt'};
+      return m[(lang||'').toLowerCase()]||'txt';
     }
     function updateInfoBar(){
       const te = new TextEncoder();
@@ -276,11 +333,6 @@
       ibLines.textContent = `Baris: ${lines}`;
       const dt=new Date(),pad=(x)=>String(x).padStart(2,'0');
       ibLoaded.textContent = `Dimuat: ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
-    }
-
-    function extFromLang(lang){
-      const m={javascript:'js',lua:'lua',python:'py',html:'html',css:'css',php:'php',java:'java',csharp:'cs',cpp:'cpp',json:'json',markdown:'md',xml:'xml',plaintext:'txt'};
-      return m[(lang||'').toLowerCase()]||'txt';
     }
 
     function isValidUrl(u){ try{ new URL(u); return true; }catch{ return false; } }
@@ -343,7 +395,7 @@
           try{ if(t.url && isValidUrl(t.url)) window.open(t.url,'_blank'); }catch(e){}
           if(finished || running) return;
           running=true;
-          endAt = Date.now() + sec*1000;
+          endAt = Date.now() + sec*1000;        // mulai timer saat diklik
           mini.style.width='0%';
           spin.classList.remove('hidden');
           tick();
@@ -373,16 +425,29 @@
       errBox.classList.remove('hidden');
     }
 
-    function decodeData(d){
-      // payload dibuat pakai btoa(JSON.stringify(obj)) di create/uncode
-      try{ return JSON.parse(atob(d)); }catch(e){ return null; }
+    // decoder aman (coba base64 langsung, kalau gagal coba decodeURIComponent dulu)
+    function safeDecode(b64){
+      try{ return JSON.parse(atob(b64)); }catch(e1){
+        try{ return JSON.parse(decodeURIComponent(atob(b64))); }catch(e2){
+          try{ return JSON.parse(atob(decodeURIComponent(b64))); }catch(e3){
+            return null;
+          }
+        }
+      }
+    }
+
+    function setDownload(nameBase, ext, codeText){
+      const slug = (nameBase||'script').toString().trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'').replace(/\-+/g,'-').replace(/^\-+|\-+$/g,'');
+      const fname = (slug.startsWith('script-')?slug:`script-${slug}`)+'.'+(ext||'txt');
+      const blob = new Blob([codeText||''], { type:'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      downloadBtn.href = url;
+      downloadBtn.setAttribute('download', fname);
     }
 
     // Boot
     (async ()=>{
-      // set loader phrase
       const loader = document.getElementById('loader');
-
       const p = new URLSearchParams(location.search);
       const encoded = p.get('data');
 
@@ -390,7 +455,7 @@
 
       try{
         if(!encoded) throw new Error('Parameter data tidak ditemukan.');
-        const parsed = decodeData(encoded);
+        const parsed = safeDecode(encoded);
         if(!parsed || !parsed.code || !Array.isArray(parsed.tasks) || parsed.tasks.length===0){
           throw new Error('Data tidak valid.');
         }
@@ -406,6 +471,9 @@
         hljs.highlightElement(codeEl);
         codeLoaded = true; showOk();
 
+        // aktifkan unduh & set nama file (setelah unlock baru bisa diklik)
+        setDownload(codeMeta.title, extFromLang(codeMeta.type), codeMeta.code);
+
         // tasks
         const tasks = parsed.tasks.map(t => ({ type:'youtube', action:'any', url: String(t.url||'') }));
         must = Math.max(1, Math.min(parsed.requiredTasks ?? 1, tasks.length));
@@ -420,11 +488,23 @@
         loadErr = e; showErr(e.message||String(e));
       }
 
-      // minimal 800ms biar loader nggak “kedip”
+      // minimal 5 detik loader
       const elapsed = Date.now()-t0;
-      const remain  = Math.max(0, 800 - elapsed);
+      const remain  = Math.max(0, 5000 - elapsed);
       setTimeout(()=>{ loader.style.opacity='0'; loader.style.pointerEvents='none'; setTimeout(()=>loader.remove(), 260); }, remain);
     })();
+
+    // Tools (aktif setelah unlock)
+    copyBtn.addEventListener('click', ()=>{
+      const txt = codeEl.textContent || '';
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(()=>{
+          copyBtn.textContent='Disalin!'; setTimeout(()=>copyBtn.textContent='Salin Kode',1500);
+        });
+      }else{
+        const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      }
+    });
   </script>
 </body>
 </html>
